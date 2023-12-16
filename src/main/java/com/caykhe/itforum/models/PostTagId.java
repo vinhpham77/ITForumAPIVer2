@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 @Setter
 @Embeddable
 public class PostTagId implements Serializable {
+    @Serial
     private static final long serialVersionUID = -3995321831031202909L;
     @NotNull
     @Column(name = "post_id", nullable = false)

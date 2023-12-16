@@ -1,0 +1,19 @@
+spring.datasource.url=jdbc:mysql://0.0.0.0:8080/ITForum
+spring.datasource.username=username
+spring.datasource.password=password
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+server.port=8888
+server.servlet.context-path=/api
+spring.servlet.multipart.max-file-size=100MB
+spring.servlet.multipart.max-request-size=100MB
+spring.web.locale=vi_VN
+spring.web.locale-resolver=fixed
+
+# node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+token.secret.key=48a868a4042f634ac04a117f00a87202131dd7c46c4b32c4acb3edc5e15f4511
+# JWT expiration is 1 days
+token.expirationms= 86400000
+token.refresh.secret.key=TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCAuLi4
+# Refresh token expiration is 1 month
+token.refresh.expirationms= 2592000000
