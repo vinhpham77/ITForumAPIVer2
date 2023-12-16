@@ -16,14 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static org.springframework.data.domain.Sort.*;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +50,7 @@ public class PostService {
         Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
                 ? Pageable.unpaged()
                 : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        
+
         if (username.equals(createdBy)) {
             postPage = postRepository.findByCreatedByUsername(createdBy, pageable);
             count = postRepository.countByCreatedByUsername(createdBy);
