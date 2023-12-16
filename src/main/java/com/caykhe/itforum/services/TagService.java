@@ -6,6 +6,7 @@ import com.caykhe.itforum.models.Tag;
 import com.caykhe.itforum.repositories.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,18 +24,11 @@ public class TagService {
     }
 
     public ResultCount<Tag> get(Integer page, Integer size) {
-        int pageNumber = page == null ? 0 : page;
-        int pageSize = size == null ? 0 : size;
+        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+                ? Pageable.unpaged()
+                : PageRequest.of(page, size, Sort.by("name"));
 
-        List<Tag> tags;
-        if (pageNumber < 0 || pageSize < 0) {
-            throw new ApiException("Trang hoặc kích thước trang không hợp lệ", HttpStatus.BAD_REQUEST);
-        } else if (pageNumber == 0 && pageSize == 0) {
-            tags = tagRepository.findAll(Sort.by("name"));
-        } else {
-            tags = tagRepository.findAll(PageRequest.of(pageNumber, pageSize, Sort.by("name"))).toList();
-        }
-
+        List<Tag> tags = tagRepository.findAll(pageable).getContent();
         long count = tagRepository.count();
 
         return new ResultCount<>(tags, count);

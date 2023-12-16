@@ -16,11 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
     private final PostService postService;
 
+    @GetMapping("/by/{username}")
+    public ResponseEntity<?> get(@PathVariable String username, Integer page, Integer size) {
+        return new ResponseEntity<>(postService.getByUser(username, page, size), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable Integer id) {
         return new ResponseEntity<>(postService.get(id), HttpStatus.OK);
     }
-
+    
     @GetMapping("/create")
     public ResponseEntity<?> create(PostDto postDto) {
         return new ResponseEntity<>(postService.create(postDto), HttpStatus.OK);

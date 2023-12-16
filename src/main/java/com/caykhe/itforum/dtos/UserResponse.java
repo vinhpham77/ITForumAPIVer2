@@ -14,7 +14,7 @@ public class UserResponse {
 
     private String email;
 
-    private Boolean gender = null;
+    private Boolean gender;
 
     private Date birthdate;
 

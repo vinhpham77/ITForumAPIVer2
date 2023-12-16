@@ -2,6 +2,7 @@ package com.caykhe.itforum.services;
 
 import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.dtos.PostDto;
+import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.models.Post;
 import com.caykhe.itforum.models.PostTag;
 import com.caykhe.itforum.models.Tag;
@@ -11,11 +12,18 @@ import com.caykhe.itforum.repositories.PostTagRepository;
 import com.caykhe.itforum.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +45,26 @@ public class PostService {
 
         return post;
     }
+
+    public ResultCount<Post> getByUser(String createdBy, Integer page, Integer size) {
+        long count;
+        Page<Post> postPage;
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+                ? Pageable.unpaged()
+                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        
+        if (username.equals(createdBy)) {
+            postPage = postRepository.findByCreatedByUsername(createdBy, pageable);
+            count = postRepository.countByCreatedByUsername(createdBy);
+        } else {
+            postPage = postRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable);
+            count = postRepository.countByCreatedByUsernameAndIsPrivateFalse(createdBy);
+        }
+
+        return new ResultCount<>(postPage.getContent(), count);
+    }
+
 
     @Transactional
     public Post create(PostDto postDto) {
@@ -67,4 +95,5 @@ public class PostService {
 
         return savedPost;
     }
+
 }
