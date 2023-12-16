@@ -1,18 +1,29 @@
 package com.caykhe.itforum.models;
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
 
-import java.util.List;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@Table(name = "comments")
 public class Comment {
+    
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
-//    @Field(name = "contentId", targetType = FieldType.OBJECT_ID)
-    private String contentId;
-    private Type type;
-    private List<SubComment> comments;
+    @NotNull
+    @Column(name = "target_id", nullable = false)
+    private Integer targetId;
+
+    @NotNull
+    @Column(name = "type", nullable = false)
+    private Boolean type = false;
+
 }

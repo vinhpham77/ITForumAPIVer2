@@ -1,4 +1,4 @@
-package com.caykhe.itforum.models;
+package com.caykhe.itforum.dtos;
 
 import lombok.Builder;
 import lombok.Data;

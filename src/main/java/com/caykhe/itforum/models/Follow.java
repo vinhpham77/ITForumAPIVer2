@@ -1,16 +1,32 @@
 package com.caykhe.itforum.models;
 
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
-import java.util.Date;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-@Data
+@Getter
+@Setter
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@Table(name = "follows")
 public class Follow {
-    @Id
-    private String id;
-    private String follower;
-    private String followed;
-    private Date createdAt;
+    
+    @EmbeddedId
+    private FollowId id;
+
+    @MapsId("follower")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "follower", nullable = false, referencedColumnName = "username")
+    private User follower;
+
+    @MapsId("followed")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "followed", nullable = false, referencedColumnName = "username")
+    private User followed;
+
 }

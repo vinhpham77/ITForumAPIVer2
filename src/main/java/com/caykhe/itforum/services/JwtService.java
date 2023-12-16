@@ -73,7 +73,7 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, boolean isRefreshToken) {
         Key signingKey = isRefreshToken ? getRefreshSigningKey() : getSigningKey();
         var expirationMs = isRefreshToken ? jwtRefreshExpirationMs : jwtExpirationMs;
-        
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -94,7 +94,7 @@ public class JwtService {
 
     public Claims extractAllClaims(String token, boolean isRefreshToken) {
         Key signingKey = isRefreshToken ? getRefreshSigningKey() : getSigningKey();
-        
+
         return Jwts
                 .parserBuilder()
                 .setSigningKey(signingKey)

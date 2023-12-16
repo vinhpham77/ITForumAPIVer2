@@ -1,20 +1,31 @@
 package com.caykhe.itforum.models;
 
-import jakarta.validation.constraints.Pattern;
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "tags")
 public class Tag {
+    
     @Id
-    @Pattern(regexp = "^[a-zA-Z0-9]{24}$", message = "ID không hợp lệ")
-    private String id;
-    
-//    @Indexed(unique = true)
-    @Pattern(regexp = "^[a-zA-Z0-9]{1,20}$", message = "Tên tag không hợp lệ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @Size(max = 30)
+    @NotNull
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
-    
+
+    @Size(max = 100)
+    @Column(name = "description", length = 100)
     private String description;
+
 }

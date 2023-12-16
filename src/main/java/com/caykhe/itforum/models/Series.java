@@ -1,44 +1,55 @@
 package com.caykhe.itforum.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.Date;
-import java.util.List;
+import java.time.Instant;
 
-@Data
-@Builder
+@Getter
+@Setter
+@Entity
+@Table(name = "series")
 public class Series {
     @Id
-    @Pattern(regexp = "^[a-f\\d]{24}$", message = "ID không hợp lệ")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
-    @NotBlank(message = "Tiêu đề không được để trống")
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @NotBlank(message = "Nội dung không được để trống")
+    @NotNull
+    @Lob
+    @Column(name = "content", nullable = false)
     private String content;
-    
-    @NotNull(message = "Danh sách bài viết không được để trống")
-//    @Field(name="postIds",targetType = FieldType.OBJECT_ID)
-    private List<String> postIds;
 
-    @NotNull(message = "Điểm không được để trống")
-    private int score;
+    @NotNull
+    @Column(name = "score", nullable = false)
+    private Integer score;
 
-    @Min(value = 0, message = "Số lượt bình luận không thể nhỏ hơn 0")
-    private int commentCount;
+    @NotNull
+    @Column(name = "is_private", nullable = false)
+    private Boolean isPrivate = false;
 
-    @JsonProperty("isPrivate")
-    private boolean isPrivate;
+    @NotNull
+    @Column(name = "comment_court", nullable = false)
+    private Integer commentCourt;
 
-    @NotBlank(message = "Tác giả không được để trống")
-    private String createdBy;
+    @NotNull
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
 
-    @PastOrPresent(message = "Ngày cập nhật không hợp lệ")
-    @NotNull(message = "Ngày cập nhật không được để trống")
-    private Date updatedAt;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "created_by", nullable = false, referencedColumnName = "username")
+    private User createdBy;
+
 }

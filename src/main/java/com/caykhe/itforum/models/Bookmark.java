@@ -2,20 +2,16 @@ package com.caykhe.itforum.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "authentications")
-public class Authentication {
-
+@Entity
+@Table(name = "bookmarks")
+public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -23,13 +19,7 @@ public class Authentication {
 
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "username", nullable = false, referencedColumnName = "username")
     private User username;
-
-    @Size(max = 100)
-    @NotNull
-    @Column(name = "refresh_token", nullable = false, length = 100)
-    private String refreshToken;
 
 }

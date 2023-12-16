@@ -7,29 +7,43 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.Instant;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "authentications")
-public class Authentication {
-
+@Table(name = "notifications")
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "username", nullable = false, referencedColumnName = "username")
     private User username;
 
-    @Size(max = 100)
     @NotNull
-    @Column(name = "refresh_token", nullable = false, length = 100)
-    private String refreshToken;
+    @Lob
+    @Column(name = "content", nullable = false)
+    private String content;
+
+    @NotNull
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @NotNull
+    @Column(name = "is_read", nullable = false)
+    private Byte isRead;
+
+    @Size(max = 10)
+    @NotNull
+    @Column(name = "type", nullable = false, length = 10)
+    private String type;
 
 }
