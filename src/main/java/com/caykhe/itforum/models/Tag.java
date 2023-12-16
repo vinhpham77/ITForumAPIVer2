@@ -13,7 +13,7 @@ import lombok.*;
 @Entity
 @Table(name = "tags")
 public class Tag {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -21,7 +21,7 @@ public class Tag {
 
     @Size(max = 30)
     @NotNull
-    @Column(name = "name", nullable = false, length = 30)
+    @Column(name = "name", unique = true, nullable = false, length = 30)
     private String name;
 
     @Size(max = 100)

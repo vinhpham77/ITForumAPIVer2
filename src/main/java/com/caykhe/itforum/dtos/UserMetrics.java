@@ -1,6 +1,5 @@
 package com.caykhe.itforum.dtos;
 
-import com.caykhe.itforum.models.Role;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 

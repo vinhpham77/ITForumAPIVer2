@@ -1,16 +1,19 @@
 package com.caykhe.itforum.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "post_tags")
 public class PostTag {
+    
     @EmbeddedId
     private PostTagId id;
 

@@ -1,5 +1,6 @@
 package com.caykhe.itforum.models;
 
+import com.caykhe.itforum.dtos.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,7 +26,7 @@ public class User implements UserDetails {
 
     @Size(max = 50)
     @NotNull
-    @Column(name = "username", nullable = false, length = 50)
+    @Column(name = "username", unique = true, nullable = false, length = 50)
     private String username;
 
     @Size(max = 50)
@@ -35,7 +36,7 @@ public class User implements UserDetails {
 
     @Size(max = 50)
     @NotNull
-    @Column(name = "email", nullable = false, length = 50)
+    @Column(name = "email", unique = true, nullable = false, length = 50)
     private String email;
 
     private LocalDate birthdate;

@@ -1,6 +1,5 @@
 package com.caykhe.itforum.dtos;
 
-import com.caykhe.itforum.models.Role;
 import lombok.Builder;
 import lombok.Data;
 

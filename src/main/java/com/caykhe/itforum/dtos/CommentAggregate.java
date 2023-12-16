@@ -1,6 +1,5 @@
 package com.caykhe.itforum.dtos;
 
-import com.caykhe.itforum.models.Type;
 import lombok.Data;
 
 import java.util.List;

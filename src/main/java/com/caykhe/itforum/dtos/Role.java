@@ -1,4 +1,4 @@
-package com.caykhe.itforum.models;
+package com.caykhe.itforum.dtos;
 
 public enum Role {
     ROLE_member,
