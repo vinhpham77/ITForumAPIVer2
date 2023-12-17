@@ -1,22 +1,19 @@
 package com.caykhe.itforum.dtos;
 
-import com.caykhe.itforum.models.Post;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
 
-import java.io.Serializable;
 import java.util.List;
+import java.time.Instant;
+import com.caykhe.itforum.models.User;
 
-/**
- * DTO for {@link Post}
- */
-
-@Value
 @Data
-public class PostDto implements Serializable {
+@Builder
+public class PostDto {
+    Integer id;
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
@@ -31,4 +28,13 @@ public class PostDto implements Serializable {
 
     @NotNull(message = "Mức độ chia sẻ phải được chỉ định")
     Boolean isPrivate;
+    
+    Integer score;
+    
+    Integer commentCount;
+    
+    Instant updatedAt;
+    
+    User createdBy;
+    
 }

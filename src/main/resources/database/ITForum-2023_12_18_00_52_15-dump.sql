@@ -1,6 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `ITForum` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `ITForum`;
--- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.2.0, for Win64 (x86_64)
 --
 -- Host: 178.128.109.119    Database: ITForum
 -- ------------------------------------------------------
@@ -9,7 +7,7 @@ USE `ITForum`;
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -31,7 +29,7 @@ CREATE TABLE `authentications` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`),
   CONSTRAINT `authentications_users_username_fk` FOREIGN KEY (`username`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +38,7 @@ CREATE TABLE `authentications` (
 
 LOCK TABLES `authentications` WRITE;
 /*!40000 ALTER TABLE `authentications` DISABLE KEYS */;
-INSERT INTO `authentications` VALUES (1,'user0002','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMDAwMiIsImlhdCI6MTcwMjc5NjE0MCwiZXhwIjoxNzA1Mzg4MTQwfQ.NHW7ZG4XUDI7WANcPSybvz0bRUwcIEKRLVKsu9wkrUs');
+INSERT INTO `authentications` VALUES (1,'user0002','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMDAwMiIsImlhdCI6MTcwMjc5NjE0MCwiZXhwIjoxNzA1Mzg4MTQwfQ.NHW7ZG4XUDI7WANcPSybvz0bRUwcIEKRLVKsu9wkrUs'),(2,'user0003','eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMDAwMyIsImlhdCI6MTcwMjgwMTE0OCwiZXhwIjoxNzA1MzkzMTQ4fQ.okkINw5mS-Z7TB_aQw8-iE7BK-7AmnX-E-KXjeA2bx8');
 /*!40000 ALTER TABLE `authentications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -255,6 +253,7 @@ CREATE TABLE `post_tags` (
 
 LOCK TABLES `post_tags` WRITE;
 /*!40000 ALTER TABLE `post_tags` DISABLE KEYS */;
+INSERT INTO `post_tags` VALUES (5,1),(6,1),(8,2),(6,4);
 /*!40000 ALTER TABLE `post_tags` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -277,7 +276,7 @@ CREATE TABLE `posts` (
   PRIMARY KEY (`id`),
   KEY `posts_users_username_fk` (`created_by`),
   CONSTRAINT `posts_users_username_fk` FOREIGN KEY (`created_by`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -286,6 +285,7 @@ CREATE TABLE `posts` (
 
 LOCK TABLES `posts` WRITE;
 /*!40000 ALTER TABLE `posts` DISABLE KEYS */;
+INSERT INTO `posts` VALUES (5,'Cuộc sống thật là đẹp phải không?','Tôi là wjbu',0,_binary '\0',0,'user0003','2023-12-17 13:51:26'),(6,'Flutter có phù hợp cho phát triển ứng dụng Web?','Lag lắm',0,_binary '',0,'user0003','2023-12-17 13:53:55'),(8,'NodeJs for newbie','Là như này',0,_binary '',0,'user0003','2023-12-17 13:59:54');
 /*!40000 ALTER TABLE `posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -302,13 +302,13 @@ CREATE TABLE `series` (
   `content` tinytext NOT NULL,
   `score` int NOT NULL DEFAULT '0',
   `is_private` tinyint(1) NOT NULL DEFAULT '0',
-  `comment_court` int NOT NULL DEFAULT '0',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `comment_count` int NOT NULL DEFAULT '0',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `series_users_username_fk` (`created_by`),
   CONSTRAINT `series_users_username_fk` FOREIGN KEY (`created_by`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -317,7 +317,35 @@ CREATE TABLE `series` (
 
 LOCK TABLES `series` WRITE;
 /*!40000 ALTER TABLE `series` DISABLE KEYS */;
+INSERT INTO `series` VALUES (1,'Những kẻ khờ mộng mơ','Là như này',0,0,0,'2023-12-17 17:33:43','user0003'),(2,'Những kẻ khờ mộng mơ 2','Là như này 2',0,1,0,'2023-12-17 17:33:59','user0003');
 /*!40000 ALTER TABLE `series` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `series_posts`
+--
+
+DROP TABLE IF EXISTS `series_posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `series_posts` (
+  `series_id` int NOT NULL,
+  `post_id` int NOT NULL,
+  PRIMARY KEY (`post_id`,`series_id`),
+  KEY `series_posts_series_id_fk` (`series_id`),
+  CONSTRAINT `series_posts_posts_id_fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`),
+  CONSTRAINT `series_posts_series_id_fk` FOREIGN KEY (`series_id`) REFERENCES `series` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `series_posts`
+--
+
+LOCK TABLES `series_posts` WRITE;
+/*!40000 ALTER TABLE `series_posts` DISABLE KEYS */;
+INSERT INTO `series_posts` VALUES (1,5),(1,6);
+/*!40000 ALTER TABLE `series_posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -415,4 +443,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-17 14:45:32
+-- Dump completed on 2023-12-18  0:52:24

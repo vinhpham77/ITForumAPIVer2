@@ -21,11 +21,22 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable Integer id) {
-        return new ResponseEntity<>(postService.get(id), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getDto(id), HttpStatus.OK);
     }
     
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody PostDto postDto) {
         return new ResponseEntity<>(postService.create(postDto), HttpStatus.OK);
+    }
+    
+    @PutMapping("/{id}/update")
+    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody PostDto postDto) {
+        return new ResponseEntity<>(postService.update(id, postDto), HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        postService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
