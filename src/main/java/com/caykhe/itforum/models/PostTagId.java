@@ -3,8 +3,7 @@ package com.caykhe.itforum.models;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import java.io.Serial;
@@ -13,10 +12,15 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Embeddable
 public class PostTagId implements Serializable {
+
     @Serial
     private static final long serialVersionUID = -3995321831031202909L;
+    
     @NotNull
     @Column(name = "post_id", nullable = false)
     private Integer postId;

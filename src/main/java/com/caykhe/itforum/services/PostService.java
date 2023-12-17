@@ -3,10 +3,7 @@ package com.caykhe.itforum.services;
 import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.dtos.PostDto;
 import com.caykhe.itforum.dtos.ResultCount;
-import com.caykhe.itforum.models.Post;
-import com.caykhe.itforum.models.PostTag;
-import com.caykhe.itforum.models.Tag;
-import com.caykhe.itforum.models.User;
+import com.caykhe.itforum.models.*;
 import com.caykhe.itforum.repositories.PostRepository;
 import com.caykhe.itforum.repositories.PostTagRepository;
 import com.caykhe.itforum.repositories.UserRepository;
@@ -21,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -82,13 +80,27 @@ public class PostService {
                 .map(tagService::findByName)
                 .toList();
 
-        Post savedPost = postRepository.save(post);
+        Post savedPost;
+        try {
+            savedPost = postRepository.save(post);
+        } catch (Exception e) {
+            throw new ApiException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         List<PostTag> postTags = tags.stream()
-                .map(tag -> PostTag.builder().post(savedPost).tag(tag).build())
-                .toList();
+                .map(tag -> PostTag
+                        .builder()
+                        .id(PostTagId.builder().tagId(tag.getId()).postId(savedPost.getId()).build())
+                        .post(savedPost)
+                        .tag(tag)
+                        .build()
+                ).collect(Collectors.toList());
 
-        postTagRepository.saveAll(postTags);
+        try {
+            postTagRepository.saveAll(postTags);
+        } catch (Exception e) {
+            throw new ApiException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return savedPost;
     }

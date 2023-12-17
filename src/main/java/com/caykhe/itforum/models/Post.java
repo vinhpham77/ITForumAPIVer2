@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -55,4 +56,11 @@ public class Post {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (commentCount == null) commentCount = 0;
+        if (updatedAt == null) updatedAt = new Date().toInstant();
+        if (score == null) score = 0;
+    }
+    
 }

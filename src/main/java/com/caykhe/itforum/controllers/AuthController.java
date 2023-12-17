@@ -19,8 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthenticationService authenticationService;
-
-
+    
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@Valid @RequestBody SignInRequest signin) {
         return new ResponseEntity<>(authenticationService.signIn(signin), HttpStatus.OK);

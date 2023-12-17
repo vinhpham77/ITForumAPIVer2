@@ -56,7 +56,7 @@ public class AuthenticationService {
             throw new ApiException(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
 
-        //expired in 15 minutes
+        
         var authentication = authenticationRepository.findByUsername(user);
         if (authentication.isPresent()) {
             var refreshToken = authentication.get().getRefreshToken();
@@ -64,8 +64,7 @@ public class AuthenticationService {
                 return JsonWebToken.builder().token(refreshToken).build();
             }
         }
-
-        System.out.println(user);
+        
         var refreshToken = jwtService.generateToken(user, true);
         var newAuthentication = Authentication.builder()
                 .username(user)
