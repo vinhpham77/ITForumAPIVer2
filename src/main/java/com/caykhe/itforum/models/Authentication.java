@@ -27,9 +27,9 @@ public class Authentication {
     @JoinColumn(name = "username", nullable = false, referencedColumnName = "username")
     private User username;
 
-    @Size(max = 100)
+    @Size(max = 200)
     @NotNull
-    @Column(name = "refresh_token", nullable = false, length = 100)
+    @Column(name = "refresh_token", nullable = false, length = 200)
     private String refreshToken;
 
 }

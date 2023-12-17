@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @Column(name = "username", unique = true, nullable = false, length = 50)
     private String username;
 
-    @Size(max = 50)
+    @Size(max = 200)
     @NotNull
     @Column(name = "password", nullable = false, length = 50)
     private String password;
@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @NotNull
     @Column(name = "email", unique = true, nullable = false, length = 50)
     private String email;
-
+    @Column(name = "birthdate")
     private LocalDate birthdate;
 
     @Size(max = 100)
@@ -48,7 +48,7 @@ public class User implements UserDetails {
     @Lob
     private String bio;
 
-    @Size(max = 20)
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
@@ -64,21 +64,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
