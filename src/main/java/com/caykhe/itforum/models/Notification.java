@@ -39,7 +39,7 @@ public class Notification {
 
     @NotNull
     @Column(name = "is_read", nullable = false)
-    private Byte isRead;
+    private Boolean isRead;
 
     @Size(max = 10)
     @NotNull

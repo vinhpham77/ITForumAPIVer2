@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
-    Page<Post> findByCreatedByUsername(String username, Pageable pageable);
-    long countByCreatedByUsername(String username);
-    Page<Post> findByCreatedByUsernameAndIsPrivateFalse(String username, Pageable pageable);
-    long countByCreatedByUsernameAndIsPrivateFalse(String username);
+    Page<Post> findByCreatedByUsername(String createdBy, Pageable pageable);
+    Page<Post> findByCreatedByUsernameAndIsPrivateFalse(String createdBy, Pageable pageable);
+    Page<Post> findByCreatedByUsernameAndTagsName(String createdBy, String tag, Pageable pageable);
+    Page<Post> findByCreatedByUsernameAndTagsNameAndIsPrivateFalse(String createdBy, String tag, Pageable pageable);
 }

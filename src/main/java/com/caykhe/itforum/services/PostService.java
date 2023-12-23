@@ -5,7 +5,6 @@ import com.caykhe.itforum.dtos.PostDto;
 import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.models.*;
 import com.caykhe.itforum.repositories.PostRepository;
-import com.caykhe.itforum.repositories.PostTagRepository;
 import com.caykhe.itforum.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagService tagService;
     private final UserRepository userRepository;
-    private final PostTagRepository postTagRepository;
 
     public Post get(Integer id) {
         var post = postRepository.findById(id)
@@ -42,14 +42,9 @@ public class PostService {
 
         return post;
     }
-    
-    public PostDto getDto(Integer id) {
-        return convertToDto(get(id));
-    }
-    
+
     @Transactional
-    public ResultCount<PostDto> getByUser(String createdBy, Integer page, Integer size) {
-        long count;
+    public ResultCount<Post> getByUser(String createdBy, String tag, Integer page, Integer size) {
         Page<Post> postPage;
         String requester = SecurityContextHolder.getContext().getAuthentication().getName();
         Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
@@ -57,18 +52,17 @@ public class PostService {
                 : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         if (requester.equals(createdBy)) {
-            postPage = postRepository.findByCreatedByUsername(createdBy, pageable);
-            count = postRepository.countByCreatedByUsername(createdBy);
+            postPage = (tag == null) ? postRepository.findByCreatedByUsername(createdBy, pageable)
+                    : postRepository.findByCreatedByUsernameAndTagsName(createdBy, tag, pageable);
         } else {
-            postPage = postRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable);
-            count = postRepository.countByCreatedByUsernameAndIsPrivateFalse(createdBy);
+            postPage = (tag == null) ? postRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable)
+                    : postRepository.findByCreatedByUsernameAndTagsNameAndIsPrivateFalse(createdBy, tag, pageable);
         }
 
-        List<PostDto> postDtos = postPage.getContent().stream()
-                .map(this::convertToDto)
-                .toList();
+        List<Post> posts = postPage.toList();
+        long count = postPage.getTotalElements();
 
-        return new ResultCount<>(postDtos, count);
+        return new ResultCount<>(posts, count);
     }
 
     @Transactional
@@ -78,28 +72,26 @@ public class PostService {
         User user = userRepository.findByUsername(requester)
                 .orElseThrow(() -> new ApiException("Người dùng @" + requester + " không tồn tại", HttpStatus.NOT_FOUND));
 
+        Set<Tag> tags = postDto.getTags().stream()
+                .map(tagService::findByName)
+                .collect(Collectors.toSet());
+
         Post post = Post
                 .builder()
                 .title(postDto.getTitle())
                 .content(postDto.getContent())
                 .isPrivate(postDto.getIsPrivate())
                 .createdBy(user)
+                .tags(tags)
                 .build();
 
-        List<Tag> tags = postDto.getTags().stream()
-                .map(tagService::findByName)
-                .toList();
-
         try {
-            Post savedPost = postRepository.save(post);
-            List<PostTag> postTags = createPostTags(tags, savedPost);
-            postTagRepository.saveAll(postTags);
-
-            return savedPost;
+            return postRepository.save(post);
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @Transactional
     public Post update(Integer id, PostDto postDto) {
@@ -122,21 +114,10 @@ public class PostService {
                 .map(tagService::findByName)
                 .toList();
 
+        post.setTags(new HashSet<>(tags));
+
         try {
-            Post savedPost = postRepository.save(post);
-            List<PostTag> newPostTags = createPostTags(tags, savedPost);
-            List<PostTag> currentPostTags = postTagRepository.findAllByPostId(id);
-
-            List<PostTag> postTagsToDelete = new ArrayList<>(currentPostTags);
-            postTagsToDelete.removeAll(newPostTags);
-
-            List<PostTag> postTagsToAdd = new ArrayList<>(newPostTags);
-            postTagsToAdd.removeAll(currentPostTags);
-
-            postTagRepository.deleteAll(postTagsToDelete);
-            postTagRepository.saveAll(postTagsToAdd);
-
-            return savedPost;
+            return postRepository.save(post);
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi cập nhật bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -160,35 +141,4 @@ public class PostService {
             throw new ApiException("Có lỗi xảy ra khi xóa bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    private static List<PostTag> createPostTags(List<Tag> tags, Post savedPost) {
-        return tags.stream()
-                .map(tag -> PostTag
-                        .builder()
-                        .id(PostTagId.builder().tagId(tag.getId()).postId(savedPost.getId()).build())
-                        .post(savedPost)
-                        .tag(tag)
-                        .build()
-                ).toList();
-    }
-
-    private PostDto convertToDto(Post post) {
-        List<String> tags = postTagRepository.findAllByPostId(post.getId())
-                .stream().map(PostTag::getTag)
-                .map(Tag::getName)
-                .toList();
-
-        return PostDto.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .tags(tags)
-                .isPrivate(post.getIsPrivate())
-                .createdBy(post.getCreatedBy())
-                .updatedAt(post.getUpdatedAt())
-                .score(post.getScore())
-                .commentCount(post.getCommentCount())
-                .build();
-    }
-
 }

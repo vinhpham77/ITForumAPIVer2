@@ -9,6 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ import java.util.Date;
 @Entity
 @Table(name = "posts")
 public class Post {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -33,6 +34,13 @@ public class Post {
     @Lob
     @Column(name = "content", nullable = false)
     private String content;
+
+    @ManyToMany
+    @JoinTable(
+            name = "post_tags",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags;
 
     @NotNull
     @Column(name = "score", nullable = false)
@@ -62,5 +70,5 @@ public class Post {
         if (updatedAt == null) updatedAt = new Date().toInstant();
         if (score == null) score = 0;
     }
-    
+
 }

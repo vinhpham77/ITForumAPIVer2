@@ -15,13 +15,13 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/by/{username}")
-    public ResponseEntity<?> get(@PathVariable String username, Integer page, Integer size) {
-        return new ResponseEntity<>(postService.getByUser(username, page, size), HttpStatus.OK);
+    public ResponseEntity<?> get(@PathVariable String username, String tag, Integer page, Integer size) {
+        return new ResponseEntity<>(postService.getByUser(username, tag, page, size), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable Integer id) {
-        return new ResponseEntity<>(postService.getDto(id), HttpStatus.OK);
+        return new ResponseEntity<>(postService.get(id), HttpStatus.OK);
     }
     
     @PostMapping("/create")
