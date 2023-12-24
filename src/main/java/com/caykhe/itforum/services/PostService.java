@@ -52,10 +52,10 @@ public class PostService {
                 : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         if (requester.equals(createdBy)) {
-            postPage = (tag == null) ? postRepository.findByCreatedByUsername(createdBy, pageable)
+            postPage = (tag.isBlank()) ? postRepository.findByCreatedByUsername(createdBy, pageable)
                     : postRepository.findByCreatedByUsernameAndTagsName(createdBy, tag, pageable);
         } else {
-            postPage = (tag == null) ? postRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable)
+            postPage = (tag.isBlank()) ? postRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable)
                     : postRepository.findByCreatedByUsernameAndTagsNameAndIsPrivateFalse(createdBy, tag, pageable);
         }
 
