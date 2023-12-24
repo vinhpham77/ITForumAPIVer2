@@ -20,6 +20,7 @@ import java.util.Objects;
 public class FollowId implements Serializable {
     @Serial
     private static final long serialVersionUID = -7046663298697869314L;
+    
     @Size(max = 50)
     @NotNull
     @Column(name = "follower", nullable = false, length = 50)

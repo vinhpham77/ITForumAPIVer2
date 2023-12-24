@@ -48,7 +48,6 @@ public class User implements UserDetails {
     @Lob
     private String bio;
 
-
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)

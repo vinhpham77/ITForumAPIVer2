@@ -49,24 +49,23 @@ public class SeriesService {
 
     @Transactional
     public ResultCount<SeriesDto> getByUser(String createdBy, Integer page, Integer size) {
-        long count;
         Page<Series> seriesPage;
         String requester = SecurityContextHolder.getContext().getAuthentication().getName();
         Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
                 ? Pageable.unpaged()
-                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         if (requester.equals(createdBy)) {
             seriesPage = seriesRepository.findByCreatedByUsername(createdBy, pageable);
-            count = seriesRepository.countByCreatedByUsername(createdBy);
         } else {
             seriesPage = seriesRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable);
-            count = seriesRepository.countByCreatedByUsernameAndIsPrivateFalse(createdBy);
         }
 
         List<SeriesDto> seriesDtos = seriesPage.getContent().stream()
                 .map(this::convertToDto)
                 .toList();
+        
+        long count = seriesPage.getTotalElements();
 
         return new ResultCount<>(seriesDtos, count);
     }
