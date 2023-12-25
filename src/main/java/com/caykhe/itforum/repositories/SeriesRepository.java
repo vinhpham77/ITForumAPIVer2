@@ -12,5 +12,7 @@ public interface SeriesRepository extends JpaRepository<Series, Integer> {
 
     Page<Series> findByCreatedByUsernameAndIsPrivateFalse(String username, Pageable pageable);
 
+    Page<Series> findByIsPrivateFalse(Pageable pageable);
+
     int countByCreatedBy(User user);
 }

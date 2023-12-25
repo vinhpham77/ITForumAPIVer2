@@ -39,5 +39,11 @@ public class SeriesController {
         seriesService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> get(@RequestParam(required = false) Integer page,
+                                 @RequestParam(required = false) Integer limit) {
+        return ResponseEntity.ok(seriesService.getSeries( page, limit));
+    }
     
 }
