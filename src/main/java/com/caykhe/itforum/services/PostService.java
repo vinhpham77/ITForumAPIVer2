@@ -1,6 +1,7 @@
 package com.caykhe.itforum.services;
 
 import com.caykhe.itforum.dtos.ApiException;
+import com.caykhe.itforum.dtos.PostAggregations;
 import com.caykhe.itforum.dtos.PostDto;
 import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.models.*;
@@ -167,8 +168,34 @@ public class PostService {
                 : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         List<String> usernames = followService.getFollowedByFollower();
-        postPage = postRepository.findByCreatedByInAndIsPrivateFalse(usernames, pageable);
+        postPage = tag.isBlank() ? postRepository.findByCreatedByInAndIsPrivateFalse(usernames, pageable)
+                : postRepository.findByCreatedByInAndTagsNameAndIsPrivateFalse(usernames, tag, pageable);
 
+        List<Post> posts = postPage.toList();
+        long count = postPage.getTotalElements();
+
+        return new ResultCount<>(posts, count);
+    }
+
+    @Transactional
+    public ResultCount<Post> search(String fieldSearch, String searchContent, String sort, String sortField, Integer page, Integer limit) {
+        Page<Post> postPage;
+        sortField = sortField.isEmpty() ? "updatedAt" : sortField;
+        Pageable pageable = (page == null || limit == null || page < 0 || limit <= 0)
+                ? Pageable.unpaged()
+                : PageRequest.of(page - 1, limit, Sort.by("ASC".equalsIgnoreCase(sort) ? Sort.Direction.ASC : Sort.Direction.DESC, sortField));
+
+        postPage = switch (fieldSearch) {
+            case "title" -> postRepository.findByTitleContainingAndIsPrivateFalse(searchContent, pageable);
+            case "content" -> postRepository.findByContentContainingAndIsPrivateFalse(searchContent, pageable);
+            case "displayName" ->
+                    postRepository.findByCreatedBy_DisplayNameContainingAndIsPrivateFalse(searchContent, pageable);
+            case "tag" -> postRepository.findByTagsNameContainingAndIsPrivateFalse(searchContent, pageable);
+            case "" ->
+                    postRepository.findByTitleOrDisplayNameOrTagsNameOrContentContainingAndIsPrivateFalse(searchContent, pageable);
+            default ->
+                    throw new ApiException("Lỗi! Không thể tìm kiếm theo trường " + fieldSearch, HttpStatus.BAD_REQUEST);
+        };
         List<Post> posts = postPage.toList();
         long count = postPage.getTotalElements();
 
