@@ -28,6 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagService tagService;
     private final UserRepository userRepository;
+    private  final FollowService followService;
 
     public Post get(Integer id) {
         var post = postRepository.findById(id)
@@ -140,5 +141,37 @@ public class PostService {
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi xóa bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Transactional
+    public ResultCount<Post> getPosts(Integer page, Integer size, String tag) {
+        Page<Post> postPage;
+        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+                ? Pageable.unpaged()
+                : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        postPage = tag.isBlank() ? postRepository.findByIsPrivateFalse(pageable)
+                : postRepository.findByTagsNameAndIsPrivateFalse(tag, pageable);
+
+        List<Post> posts = postPage.toList();
+        long count = postPage.getTotalElements();
+
+        return new ResultCount<>(posts, count);
+    }
+
+    @Transactional
+    public ResultCount<Post> getPostsFollow(Integer page, Integer size, String tag) {
+        Page<Post> postPage;
+        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+                ? Pageable.unpaged()
+                : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        List<String> usernames = followService.getFollowedByFollower();
+        postPage = postRepository.findByCreatedByInAndIsPrivateFalse(usernames, pageable);
+
+        List<Post> posts = postPage.toList();
+        long count = postPage.getTotalElements();
+
+        return new ResultCount<>(posts, count);
     }
 }

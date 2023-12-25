@@ -3,6 +3,7 @@ package com.caykhe.itforum.services;
 import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.dtos.SeriesDto;
+import com.caykhe.itforum.dtos.SeriesUser;
 import com.caykhe.itforum.models.*;
 import com.caykhe.itforum.repositories.SeriesPostRepository;
 import com.caykhe.itforum.repositories.SeriesRepository;
@@ -183,5 +184,23 @@ public class SeriesService {
                 .score(series.getScore())
                 .commentCount(series.getCommentCount())
                 .build();
+    }
+
+    public ResultCount<SeriesDto> getSeries(Integer page, Integer limit) {
+        Page<Series> seriesPage;
+        String requester = SecurityContextHolder.getContext().getAuthentication().getName();
+        Pageable pageable = (page == null || limit == null || page < 0 || limit <= 0)
+                ? Pageable.unpaged()
+                : PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        seriesPage = seriesRepository.findByIsPrivateFalse(pageable);
+
+        List<SeriesDto> seriesDtos = seriesPage.getContent().stream()
+                .map(this::convertToDto)
+                .toList();
+
+        long count = seriesPage.getTotalElements();
+
+        return new ResultCount<>(seriesDtos, count);
     }
 }

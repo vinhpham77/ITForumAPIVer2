@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, FollowId> {
@@ -18,4 +19,6 @@ public interface FollowRepository extends JpaRepository<Follow, FollowId> {
     Page<Follow> findAllByFollower(User follower, Pageable pageable);
 
     Optional<Follow> findByFollowerAndFollowed(User follower, User followed);
+
+    Optional<List<Follow>> findByFollower(User follower);
 }

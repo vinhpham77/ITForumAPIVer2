@@ -39,4 +39,18 @@ public class PostController {
         postService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/get")
+    public  ResponseEntity<?> getPostAggregations(@RequestParam(required = false, name = "page") Integer page,
+                                                  @RequestParam(required = false, name = "limit", defaultValue = "10") Integer limit,
+                                                  @RequestParam(required = false, defaultValue = "") String tag) {
+        return new ResponseEntity<>(postService.getPosts(page, limit, tag), HttpStatus.OK);
+    }
+
+    @GetMapping("/get/follow")
+    public  ResponseEntity<?> getPostAggregationsFollow(@RequestParam(required = false, name = "page") Integer page,
+                                                        @RequestParam(required = false, name = "limit", defaultValue = "10") Integer limit,
+                                                        @RequestParam(required = false, defaultValue = "") String tag) {
+        return new ResponseEntity<>(postService.getPostsFollow(page, limit, tag), HttpStatus.OK);
+    }
 }
