@@ -4,31 +4,24 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@Embeddable
 public class FollowId implements Serializable {
-
     @Serial
-    private static final long serialVersionUID = 2108726227827528872L;
-
-    @Size(max = 50)
-    @NotNull
-    @Column(name = "follower", nullable = false, length = 50)
-    private String follower;
-
-    @Size(max = 50)
-    @NotNull
-    @Column(name = "followed", nullable = false, length = 50)
-    private String followed;
+    private static final long serialVersionUID = 1932590682598799897L;
+    
+    private User follower;
+    private User followed;
 
     @Override
     public boolean equals(Object o) {
