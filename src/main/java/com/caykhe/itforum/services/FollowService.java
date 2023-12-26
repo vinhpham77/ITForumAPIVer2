@@ -29,7 +29,7 @@ public class FollowService {
 
     public Follow follow(String followed) {
         User follower = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+    System.out.println(follower.getUsername());
         if (follower.getUsername().equals(followed)) {
             throw new ApiException("Không thể theo dõi chính mình", HttpStatus.BAD_REQUEST);
         } else if (getFollow(followed).isPresent()) {
@@ -38,15 +38,21 @@ public class FollowService {
 
         var followedUser = userService.getUserByUsername(followed);
 
+        System.out.println("a"+followedUser.getUsername()+"b");
+        FollowId followId=FollowId.builder()
+                .follower(follower.getUsername())
+                .followed(followedUser.getUsername())
+                .build();
+        System.out.println(followId.getFollower()+followId.getFollowed());
         Follow follow = Follow.builder()
                 .id(FollowId.builder()
-                        .follower(follower.getUsername())
-                        .followed(followedUser.getUsername())
+                        .follower("quoc")
+                        .followed("duoc")
                         .build())
                 .follower(follower)
                 .followed(followedUser)
                 .build();
-        
+
         try {
             return followRepository.save(follow);
         } catch (Exception e) {
