@@ -101,17 +101,19 @@ DROP TABLE IF EXISTS `comment_details`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `comment_details` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `comment_id` int NOT NULL,
-  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` tinytext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `left` int NOT NULL,
-  `right` int NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `comment_details_comments_id_fk` (`comment_id`),
-  CONSTRAINT `comment_details_comments_id_fk` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+   `id` int NOT NULL AUTO_INCREMENT,
+   `comment_id` int NOT NULL,
+   `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+   `content` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `left` int NOT NULL,
+   `right` int NOT NULL,
+   PRIMARY KEY (`id`),
+   KEY `comment_details_comments_id_fk` (`comment_id`),
+   KEY `comment_details_users_username_fk` (`created_by`),
+   CONSTRAINT `comment_details_comments_id_fk` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `comment_details_users_username_fk` FOREIGN KEY (`created_by`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,12 +186,10 @@ DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` int NOT NULL AUTO_INCREMENT,
   `extension` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `target_id` int NOT NULL,
-  `type` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

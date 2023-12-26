@@ -29,6 +29,7 @@ public class SeriesService {
     private final UserRepository userRepository;
     private final PostService postService;
     private final SeriesPostRepository seriesPostRepository;
+    private final CommentService commentService;
 
     public Series get(Integer id) {
         var series = seriesRepository.findById(id)
@@ -87,7 +88,9 @@ public class SeriesService {
                 .build();
 
         try {
-            return seriesRepository.save(series);
+            series = seriesRepository.save(series);
+            commentService.create(series.getId(), true);
+            return series;
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi tạo series. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -28,10 +29,11 @@ public class CommentDetails {
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
 
-    @Size(max = 50)
     @NotNull
-    @Column(name = "username", nullable = false, length = 50)
-    private String username;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "created_by", nullable = false, referencedColumnName = "username")
+    private User createdBy;
 
     @NotNull
     @Lob
@@ -49,5 +51,10 @@ public class CommentDetails {
     @NotNull
     @Column(name = "`right`", nullable = false)
     private Integer right;
+
+    @PrePersist
+    public void prePersist() {
+        if (updatedAt == null) updatedAt = new Date().toInstant();
+    }
 
 }

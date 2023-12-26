@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class SubCommentDto {
-    private String subCommentFatherId;
+    private Integer subCommentFatherId;
 
     @NotBlank(message = "Username không được để trống")
     private String username;
