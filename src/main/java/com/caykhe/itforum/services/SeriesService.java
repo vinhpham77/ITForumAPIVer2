@@ -30,6 +30,7 @@ public class SeriesService {
     private final PostService postService;
     private final SeriesPostRepository seriesPostRepository;
     private final CommentService commentService;
+    private final FollowService followService;
 
     public Series get(Integer id) {
         var series = seriesRepository.findById(id)
@@ -189,14 +190,33 @@ public class SeriesService {
                 .build();
     }
 
+    @Transactional
     public ResultCount<SeriesDto> getSeries(Integer page, Integer limit) {
         Page<Series> seriesPage;
-        String requester = SecurityContextHolder.getContext().getAuthentication().getName();
         Pageable pageable = (page == null || limit == null || page < 0 || limit <= 0)
                 ? Pageable.unpaged()
                 : PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         seriesPage = seriesRepository.findByIsPrivateFalse(pageable);
+
+        List<SeriesDto> seriesDtos = seriesPage.getContent().stream()
+                .map(this::convertToDto)
+                .toList();
+
+        long count = seriesPage.getTotalElements();
+
+        return new ResultCount<>(seriesDtos, count);
+    }
+
+    @Transactional
+    public ResultCount<SeriesDto> getSeriesFollow(Integer page, Integer size) {
+        Page<Series> seriesPage;
+        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+                ? Pageable.unpaged()
+                : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        List<String> usernames = followService.getFollowedByFollower();
+        seriesPage = seriesRepository.findByCreatedByInAndIsPrivateFalse(usernames, pageable);
 
         List<SeriesDto> seriesDtos = seriesPage.getContent().stream()
                 .map(this::convertToDto)
