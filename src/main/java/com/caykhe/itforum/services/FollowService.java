@@ -42,7 +42,7 @@ public class FollowService {
                 .follower(follower)
                 .followed(followedUser)
                 .build();
-        
+        System.out.println(follow.toString());
         try {
             return followRepository.save(follow);
         } catch (Exception e) {
