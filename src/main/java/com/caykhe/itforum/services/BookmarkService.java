@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.caykhe.itforum.utils.ConverterUtils.convertSeriesDto;
+
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
@@ -79,22 +81,7 @@ public class BookmarkService {
     }
 
     private SeriesDto convertToDto(Series series) {
-        List<Integer> postIds = seriesPostRepository.findAllBySeriesId(series.getId())
-                .stream().map(SeriesPost::getPost)
-                .map(Post::getId)
-                .toList();
-
-        return SeriesDto.builder()
-                .id(series.getId())
-                .title(series.getTitle())
-                .content(series.getContent())
-                .postIds(postIds)
-                .isPrivate(series.getIsPrivate())
-                .createdBy(series.getCreatedBy())
-                .updatedAt(series.getUpdatedAt())
-                .score(series.getScore())
-                .commentCount(series.getCommentCount())
-                .build();
+        return convertSeriesDto(series, seriesPostRepository);
     }
 
 }
