@@ -2,6 +2,7 @@ package com.caykhe.itforum.services;
 
 import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.models.Follow;
+import com.caykhe.itforum.models.FollowId;
 import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.repositories.FollowRepository;
 import lombok.RequiredArgsConstructor;
