@@ -1,10 +1,11 @@
 package com.caykhe.itforum.services;
 
 import com.caykhe.itforum.dtos.ApiException;
-import com.caykhe.itforum.dtos.PostAggregations;
 import com.caykhe.itforum.dtos.PostDto;
 import com.caykhe.itforum.dtos.ResultCount;
-import com.caykhe.itforum.models.*;
+import com.caykhe.itforum.models.Post;
+import com.caykhe.itforum.models.Tag;
+import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.repositories.PostRepository;
 import com.caykhe.itforum.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -29,7 +30,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagService tagService;
     private final UserRepository userRepository;
-    private  final FollowService followService;
+    private final FollowService followService;
 
     public Post get(Integer id) {
         var post = postRepository.findById(id)

@@ -1,14 +1,9 @@
 package com.caykhe.itforum.services;
 
-import com.caykhe.itforum.dtos.ApiException;
-import com.caykhe.itforum.dtos.ResultCount;
-import com.caykhe.itforum.dtos.UserStats;
+import com.caykhe.itforum.dtos.*;
 import com.caykhe.itforum.models.Follow;
 import com.caykhe.itforum.models.User;
-import com.caykhe.itforum.repositories.FollowRepository;
-import com.caykhe.itforum.repositories.PostRepository;
-import com.caykhe.itforum.repositories.SeriesRepository;
-import com.caykhe.itforum.repositories.UserRepository;
+import com.caykhe.itforum.repositories.*;
 import com.caykhe.itforum.utils.PaginationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +23,7 @@ public class UserService {
     private final FollowRepository followRepository;
     private final PostRepository postRepository;
     private final SeriesRepository seriesRepository;
+    private final PostTagRepository postTagRepository;
 
     public UserDetailsService userDetailsService() {
         return username -> userRepository
@@ -57,18 +53,18 @@ public class UserService {
         User followedUser = getUserByUsername(followed);
         Pageable pageable = PaginationUtils.getPageable(page, size, "followed");
         Page<Follow> followersPage = followRepository.findAllByFollowed(followedUser, pageable);
-        
+
         return countAndAddStates(followersPage);
     }
-    
+
     public ResultCount<UserStats> getFollowers(String follower, Integer page, Integer size) {
         User followerUser = getUserByUsername(follower);
         Pageable pageable = PaginationUtils.getPageable(page, size, "follower");
         Page<Follow> followedsPage = followRepository.findAllByFollower(followerUser, pageable);
-        
+
         return countAndAddStates(followedsPage);
     }
-    
+
     private ResultCount<UserStats> countAndAddStates(Page<Follow> followePage) {
         long count = followePage.getTotalElements();
         var follows = followePage.stream().map(Follow::getFollowed);
@@ -89,7 +85,30 @@ public class UserService {
                     .followerCount(followerCount)
                     .build();
         }).toList();
-        
+
         return new ResultCount<>(userStats, count);
+    }
+
+    public List<TagCount> getTagCounts(String username) {
+        getUserByUsername(username);
+
+        return postTagRepository.countTagsByUsername(username);
+    }
+
+    public ProfileStats getProfileStats(String username) {
+        User user = getUserByUsername(username);
+        int postCount = postRepository.countByCreatedBy(user);
+        int questionCount = postTagRepository.countByPost_CreatedByAndTag_Name(user, "HoiDap");
+        int seriesCount = seriesRepository.countByCreatedBy(user);
+        int followingCount = followRepository.countByFollower(user);
+        int followerCount = followRepository.countByFollowed(user);
+        
+        return ProfileStats.builder()
+                .postCount(postCount)
+                .questionCount(questionCount)
+                .seriesCount(seriesCount)
+                .followingCount(followingCount)
+                .followerCount(followerCount)
+                .build();
     }
 }

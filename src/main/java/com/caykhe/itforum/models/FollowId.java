@@ -4,7 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import java.io.Serial;
@@ -12,15 +13,13 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Setter
 @Embeddable
 public class FollowId implements Serializable {
+
     @Serial
-    private static final long serialVersionUID = -7046663298697869314L;
-    
+    private static final long serialVersionUID = 2108726227827528872L;
+
     @Size(max = 50)
     @NotNull
     @Column(name = "follower", nullable = false, length = 50)
