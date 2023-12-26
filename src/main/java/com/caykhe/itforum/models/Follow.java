@@ -7,13 +7,12 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
-@Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
 @Table(name = "follows")
 public class Follow {
-    
     @EmbeddedId
     private FollowId id;
 

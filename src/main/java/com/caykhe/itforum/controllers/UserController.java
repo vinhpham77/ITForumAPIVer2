@@ -1,6 +1,8 @@
 package com.caykhe.itforum.controllers;
 
+import com.caykhe.itforum.dtos.ProfileStats;
 import com.caykhe.itforum.dtos.ResultCount;
+import com.caykhe.itforum.dtos.TagCount;
 import com.caykhe.itforum.dtos.UserStats;
 import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.services.UserService;
@@ -52,4 +54,15 @@ public class UserController {
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
     
+    @GetMapping("/{username}/tags")
+    public ResponseEntity<?> getTagCounts(@PathVariable String username) {
+        List<TagCount> tagCounts = userService.getTagCounts(username);
+        return new ResponseEntity<>(tagCounts, HttpStatus.OK);
+    }
+    
+    @GetMapping("/stats/{username}")    
+    public ResponseEntity<?> getProfileStats(@PathVariable String username) {
+        ProfileStats profileStats = userService.getProfileStats(username);
+        return new ResponseEntity<>(profileStats, HttpStatus.OK);
+    }
 }

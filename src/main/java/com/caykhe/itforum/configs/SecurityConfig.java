@@ -62,12 +62,12 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/signup", "/auth/signin", "/auth/refresh-token").permitAll()
-                        .requestMatchers("/users/{username}", "/users/{follower}/followings", "/users/{followed}/followers").permitAll()
+                        .requestMatchers("/users/{username}", "/users/stats/{username}", "/users/{username}/tags", "/users/{follower}/followings", "/users/{followed}/followers").permitAll()
                         .requestMatchers("/posts/get{query}", "/posts/postDetails/{id}",
                                 "/posts/postsSameAuthor/{authorName}", "/posts/{id}", "/posts/number",
                                 "/posts/by/{username}", "/posts/search", "posts/totalPost/{username}").permitAll()
                         .requestMatchers("/tags").permitAll()
-                        .requestMatchers("/series/get", "/series/by/{username}", "/series/totalSeries/{username}", "/series/detail/{id}", "/series/all", "/series/{id}", "series/by-user").permitAll()
+                        .requestMatchers("/series/get", "/series/by/{username}", "/series/totalSeries/{username}", "/series/detail/{id}", "/series/all", "/series/{id}").permitAll()
                         .requestMatchers("/votes/byPostId", "/votes", "/votes/{id}").permitAll()
                         .requestMatchers("/bookmarks/getPost{query}", "/bookmarks/getSeries{query}", "/bookmarks/{id}").permitAll()
                         .requestMatchers("/follows/{id}", "/follows/totalFollower/{followed}").permitAll()
