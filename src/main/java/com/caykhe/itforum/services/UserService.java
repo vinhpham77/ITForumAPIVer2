@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -58,36 +59,15 @@ public class UserService {
 
     private ResultCount<UserStats> countAndAddStates(Page<Follow> followePage, boolean isFollowing) {
         long count = followePage.getTotalElements();
-        var follows = followePage.stream().map(Follow::getFollowed);
-        
+        Stream<User> users;
+
         if (isFollowing) {
-            follows = followePage.stream().map(Follow::getFollowed);
+            users = followePage.stream().map(Follow::getFollowed);
         } else {
-            follows = followePage.stream().map(Follow::getFollower);
+            users = followePage.stream().map(Follow::getFollower);
         }
 
-        List<UserStats> userStats = follows.map(user -> {
-            int postCount = postRepository.countByCreatedBy(user);
-            int seriesCount = seriesRepository.countByCreatedBy(user);
-            int followCount;
-
-            if (isFollowing) {
-                followCount = followRepository.countByFollowed(user);
-            } else {
-                followCount = followRepository.countByFollower(user);
-            }
-
-            return UserStats.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .email(user.getEmail())
-                    .displayName(user.getDisplayName())
-                    .role(user.getRole())
-                    .postCount(postCount)
-                    .seriesCount(seriesCount)
-                    .followerCount(followCount)
-                    .build();
-        }).toList();
+        List<UserStats> userStats = users.map(this::addStats).toList();
 
         return new ResultCount<>(userStats, count);
     }
@@ -112,6 +92,23 @@ public class UserService {
                 .seriesCount(seriesCount)
                 .followingCount(followingCount)
                 .followerCount(followerCount)
+                .build();
+    }
+
+    public UserStats addStats(User user) {
+        int postCount = postRepository.countByCreatedBy(user);
+        int seriesCount = seriesRepository.countByCreatedBy(user);
+        int followCount = followRepository.countByFollowed(user);
+
+        return UserStats.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .displayName(user.getDisplayName())
+                .role(user.getRole())
+                .postCount(postCount)
+                .seriesCount(seriesCount)
+                .followerCount(followCount)
                 .build();
     }
 }
