@@ -18,10 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,6 +95,21 @@ public class PostService {
         }
     }
 
+    //    public List<Post> postsByTheSameAuthorsExcludingCurrent(String authorName, String currentPostId) {
+//        List<Post> allPostsByAuthor = postRepository.findByCreatedBy(authorName);
+//        List<Post> postsExcludingCurrent = new ArrayList<>();
+//        for (Post post : allPostsByAuthor) {
+//            if (!Objects.equals(post.getId(), currentPostId)) {
+//                postsExcludingCurrent.add(post);
+//            }
+//        }
+//        return postsExcludingCurrent;
+//    }
+    public List<Post> postsByTheSameAuthorsExcludingCurrent(String authorName, Integer currentPostId) {
+        Optional<User> author=userRepository.findByUsername(authorName);
+        List<Post> postList= postRepository.findByCreatedByAndIdNot(author.get(), currentPostId);
+        return postList;
+    }
 
     @Transactional
     public Post update(Integer id, PostDto postDto) {

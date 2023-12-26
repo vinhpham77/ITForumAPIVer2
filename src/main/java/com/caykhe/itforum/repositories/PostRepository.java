@@ -2,6 +2,7 @@ package com.caykhe.itforum.repositories;
 
 import com.caykhe.itforum.models.Post;
 import com.caykhe.itforum.models.User;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,4 +47,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                                                                                      Pageable pageable);
 
     int countByCreatedBy(User createdBy);
+    List<Post> findByCreatedByAndIdNot(@NotNull User createdBy, Integer id);
 }
