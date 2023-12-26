@@ -45,5 +45,11 @@ public class SeriesController {
                                  @RequestParam(required = false) Integer limit) {
         return ResponseEntity.ok(seriesService.getSeries( page, limit));
     }
+
+    @GetMapping("/get/follow")
+    public  ResponseEntity<?> getPostAggregationsFollow(@RequestParam(required = false, name = "page") Integer page,
+                                                        @RequestParam(required = false, name = "limit", defaultValue = "10") Integer limit) {
+        return new ResponseEntity<>(seriesService.getSeriesFollow(page, limit), HttpStatus.OK);
+    }
     
 }

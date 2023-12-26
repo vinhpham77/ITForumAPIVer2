@@ -45,5 +45,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findByTitleOrDisplayNameOrTagsNameOrContentContainingAndIsPrivateFalse(@Param("searchContent") String searchContent,
                                                                                      Pageable pageable);
 
+    Page<Post> findByIdIn(List<Integer> ids, Pageable pageable);
+
+    Page<Post> findByIdInAndTagsName(List<Integer> ids, String tag, Pageable pageable);
+
     int countByCreatedBy(User createdBy);
 }
