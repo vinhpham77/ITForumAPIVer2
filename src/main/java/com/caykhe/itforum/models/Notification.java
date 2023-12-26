@@ -45,5 +45,10 @@ public class Notification {
     @NotNull
     @Column(name = "type", nullable = false, length = 10)
     private String type;
+    
+    @Lob
+    @NotNull
+    @Column(name = "target_id")
+    private Integer targetId;
 
 }
