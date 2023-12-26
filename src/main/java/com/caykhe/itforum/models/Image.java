@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -27,20 +28,16 @@ public class Image {
     private String extension;
 
     @NotNull
-    @Column(name = "target_id", nullable = false)
-    private Integer targetId;
-
-    @Size(max = 10)
-    @NotNull
-    @Column(name = "type", nullable = false, length = 10)
-    private String type;
-
-    @NotNull
     @Column(name = "status", nullable = false)
     private Boolean status = false;
 
     @NotNull
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) createdAt = new Date().toInstant();
+    }
 
 }

@@ -31,6 +31,7 @@ public class PostService {
     private final TagService tagService;
     private final UserRepository userRepository;
     private final FollowService followService;
+    private final CommentService commentService;
 
     public Post get(Integer id) {
         var post = postRepository.findById(id)
@@ -89,7 +90,9 @@ public class PostService {
                 .build();
 
         try {
-            return postRepository.save(post);
+            post = postRepository.save(post);
+            commentService.create(post.getId(), false);
+            return post;
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
