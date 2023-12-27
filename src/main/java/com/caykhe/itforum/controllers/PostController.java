@@ -64,4 +64,8 @@ public class PostController {
 
         return new ResponseEntity<>(postService.search(fieldName, searchContent, sort, sortField, page, limit), HttpStatus.OK);
     }
+    @GetMapping("/postsSameAuthor/{authorName}")
+    public ResponseEntity<?> getPostsSameAuthor(@PathVariable String authorName ,@RequestParam Integer postId){
+        return  new ResponseEntity<>(postService.postsByTheSameAuthorsExcludingCurrent(authorName,postId),HttpStatus.OK);
+    }
 }

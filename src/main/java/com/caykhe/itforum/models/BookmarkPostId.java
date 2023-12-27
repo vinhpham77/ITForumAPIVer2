@@ -3,7 +3,9 @@ package com.caykhe.itforum.models;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
@@ -13,6 +15,8 @@ import java.util.Objects;
 
 @Getter
 @Setter
+
+
 @Embeddable
 public class BookmarkPostId implements Serializable {
     @Serial
@@ -28,6 +32,7 @@ public class BookmarkPostId implements Serializable {
     @NotNull
     @Column(name = "type", nullable = false)
     private Boolean type = false;
+
 
     @Override
     public boolean equals(Object o) {

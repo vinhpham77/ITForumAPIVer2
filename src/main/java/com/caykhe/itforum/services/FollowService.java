@@ -2,9 +2,10 @@ package com.caykhe.itforum.services;
 
 import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.models.Follow;
-import com.caykhe.itforum.models.FollowId;
 import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.repositories.FollowRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class FollowService {
     final FollowRepository followRepository;
     final UserService userService;
+    final EntityManager entityManager;
 
     public Optional<Follow> getFollow(String followed) {
         User followerUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -27,6 +29,7 @@ public class FollowService {
         return followRepository.findByFollowerAndFollowed(followerUser, followedUser);
     }
 
+    @Transactional
     public Follow follow(String followed) {
         User follower = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -36,13 +39,16 @@ public class FollowService {
             throw new ApiException("Đã theo dõi trước đó", HttpStatus.BAD_REQUEST);
         }
 
+        User managedFollower = entityManager.merge(follower);
         var followedUser = userService.getUserByUsername(followed);
-
-        Follow follow = Follow.builder()
-                .follower(follower)
-                .followed(followedUser)
-                .build();
+        User managedFollowed = entityManager.merge(followedUser);
         
+        
+        Follow follow = Follow.builder()
+                .follower(managedFollower)
+                .followed(managedFollowed)
+                .build();
+        System.out.println(follow.toString());
         try {
             return followRepository.save(follow);
         } catch (Exception e) {

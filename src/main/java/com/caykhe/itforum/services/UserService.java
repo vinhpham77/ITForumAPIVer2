@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -36,55 +37,37 @@ public class UserService {
                 .orElseThrow(() -> new ApiException("Không tìm thấy người dùng @" + username, HttpStatus.NOT_FOUND));
     }
 
-    public void deleteByUsername(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent())
-            userRepository.delete(userOptional.get());
-        else
-            throw new ApiException("Không tìm thấy user cần xóa", HttpStatus.NOT_FOUND);
-
-    }
-
     public Optional<List<User>> getAllUser() {
         return Optional.of(userRepository.findAll());
     }
 
-    public ResultCount<UserStats> getFollowings(String followed, Integer page, Integer size) {
-        User followedUser = getUserByUsername(followed);
-        Pageable pageable = PaginationUtils.getPageable(page, size, "followed");
-        Page<Follow> followersPage = followRepository.findAllByFollowed(followedUser, pageable);
-
-        return countAndAddStates(followersPage);
-    }
-
-    public ResultCount<UserStats> getFollowers(String follower, Integer page, Integer size) {
+    public ResultCount<UserStats> getFollowings(String follower, Integer page, Integer size) {
         User followerUser = getUserByUsername(follower);
-        Pageable pageable = PaginationUtils.getPageable(page, size, "follower");
-        Page<Follow> followedsPage = followRepository.findAllByFollower(followerUser, pageable);
+        Pageable pageable = PaginationUtils.getPageable(page - 1, size, "followed");
+        Page<Follow> followersPage = followRepository.findAllByFollower(followerUser, pageable);
 
-        return countAndAddStates(followedsPage);
+        return countAndAddStates(followersPage, true);
     }
 
-    private ResultCount<UserStats> countAndAddStates(Page<Follow> followePage) {
+    public ResultCount<UserStats> getFollowers(String followed, Integer page, Integer size) {
+        User followedUser = getUserByUsername(followed);
+        Pageable pageable = PaginationUtils.getPageable(page - 1, size, "follower");
+        Page<Follow> followedsPage = followRepository.findAllByFollowed(followedUser, pageable);
+
+        return countAndAddStates(followedsPage, false);
+    }
+
+    private ResultCount<UserStats> countAndAddStates(Page<Follow> followePage, boolean isFollowing) {
         long count = followePage.getTotalElements();
-        var follows = followePage.stream().map(Follow::getFollowed);
+        Stream<User> users;
 
-        List<UserStats> userStats = follows.map(user -> {
-            int postCount = postRepository.countByCreatedBy(user);
-            int seriesCount = seriesRepository.countByCreatedBy(user);
-            int followerCount = followRepository.countByFollowed(user);
+        if (isFollowing) {
+            users = followePage.stream().map(Follow::getFollowed);
+        } else {
+            users = followePage.stream().map(Follow::getFollower);
+        }
 
-            return UserStats.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .email(user.getEmail())
-                    .displayName(user.getDisplayName())
-                    .role(user.getRole())
-                    .postCount(postCount)
-                    .seriesCount(seriesCount)
-                    .followerCount(followerCount)
-                    .build();
-        }).toList();
+        List<UserStats> userStats = users.map(this::addStats).toList();
 
         return new ResultCount<>(userStats, count);
     }
@@ -102,13 +85,30 @@ public class UserService {
         int seriesCount = seriesRepository.countByCreatedBy(user);
         int followingCount = followRepository.countByFollower(user);
         int followerCount = followRepository.countByFollowed(user);
-        
+
         return ProfileStats.builder()
                 .postCount(postCount)
                 .questionCount(questionCount)
                 .seriesCount(seriesCount)
                 .followingCount(followingCount)
                 .followerCount(followerCount)
+                .build();
+    }
+
+    public UserStats addStats(User user) {
+        int postCount = postRepository.countByCreatedBy(user);
+        int seriesCount = seriesRepository.countByCreatedBy(user);
+        int followCount = followRepository.countByFollowed(user);
+
+        return UserStats.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .displayName(user.getDisplayName())
+                .role(user.getRole())
+                .postCount(postCount)
+                .seriesCount(seriesCount)
+                .followerCount(followCount)
                 .build();
     }
 }
