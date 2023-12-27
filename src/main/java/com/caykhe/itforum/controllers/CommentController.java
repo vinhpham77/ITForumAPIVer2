@@ -19,40 +19,42 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    @PostMapping("/{targetId}/add")
-    public ResponseEntity<?> addSubcomment(@PathVariable Integer targetId, @Valid @RequestBody SubCommentDto subCommentDto) {
+    @PostMapping("/{targetId}/{type}/add")
+    public ResponseEntity<?> addSubcomment(@PathVariable Integer targetId, @PathVariable boolean type,
+                                           @Valid @RequestBody SubCommentDto subCommentDto) {
         if (subCommentDto == null) {
             throw new ApiException("Dữ liệu không hợp lệ", HttpStatus.BAD_REQUEST);
         }
 
-        CommentDetails subCommentAggregate = commentService.addSubComment(targetId, subCommentDto);
+        CommentDetails subCommentAggregate = commentService.addSubComment(targetId, type, subCommentDto);
         return new ResponseEntity<>(subCommentAggregate, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{targetId}/{subId}/delete")
-    public ResponseEntity<?> addSubcomment(@PathVariable Integer targetId,@PathVariable Integer subId) {
+    @DeleteMapping("/{targetId}/{type}/{subId}/delete")
+    public ResponseEntity<?> addSubcomment(@PathVariable Integer targetId,@PathVariable Integer subId, @PathVariable boolean type) {
 
-        boolean result = commentService.removeSubComment(targetId, subId);
+        boolean result = commentService.removeSubComment(targetId, subId, type);
         if(result)
             return new ResponseEntity<>(result, HttpStatus.OK);
         throw new ApiException("Comment không tồn tại", HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("/{targetId}/{subId}/update")
-    public ResponseEntity<?> updateSubComment(@PathVariable Integer targetId, @PathVariable Integer subId, @RequestBody SubCommentDto subCommentDto){
+    @PutMapping("/{targetId}/{type}/{subId}/update")
+    public ResponseEntity<?> updateSubComment(@PathVariable Integer targetId, @PathVariable Integer subId,
+                                              @PathVariable boolean type, @RequestBody SubCommentDto subCommentDto){
         if (subCommentDto == null) {
             throw new ApiException("Dữ liệu không hợp lệ", HttpStatus.BAD_REQUEST);
         }
 
-        CommentDetails subCommentAggregate = commentService.updateSubComment(targetId, subId, subCommentDto);
+        CommentDetails subCommentAggregate = commentService.updateSubComment(targetId, type, subId, subCommentDto);
         return new ResponseEntity<>(subCommentAggregate, HttpStatus.OK);
     }
 
-    @GetMapping("/{targetId}/get")
-    public ResponseEntity<?> getComment(@PathVariable Integer targetId,
+    @GetMapping("/{targetId}/{type}/get")
+    public ResponseEntity<?> getComment(@PathVariable Integer targetId, @PathVariable boolean type,
                                         @RequestParam(required = false, name = "subId") Integer subId){
 
-        List<CommentDetails> subCommentAggregates = commentService.getComments(targetId, subId);
+        List<CommentDetails> subCommentAggregates = commentService.getComments(targetId, type, subId);
         return new ResponseEntity<>(subCommentAggregates, HttpStatus.OK);
     }
 }

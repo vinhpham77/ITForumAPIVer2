@@ -1,15 +1,12 @@
 package com.caykhe.itforum.services;
 
 import com.caykhe.itforum.dtos.ApiException;
-import com.caykhe.itforum.dtos.CommentAggregate;
-import com.caykhe.itforum.dtos.SubCommentAggregate;
 import com.caykhe.itforum.dtos.SubCommentDto;
 import com.caykhe.itforum.models.Comment;
 import com.caykhe.itforum.models.CommentDetails;
 import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.repositories.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -43,8 +40,8 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public void deleteComment(Integer targetId) {
-        Comment comment = commentRepository.findByTargetId(targetId)
+    public void deleteComment(Integer targetId, boolean isSeries) {
+        Comment comment = commentRepository.findByTargetIdAndType(targetId, isSeries)
                 .orElseThrow(() -> new ApiException("Comment không tồn tại", HttpStatus.NOT_FOUND));
         List<CommentDetails> listSubCom = commentDetailsRepository.findByComment(comment);
         for (CommentDetails subComment: listSubCom) {
@@ -53,8 +50,8 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    public CommentDetails addSubComment(Integer targetId, SubCommentDto newSubComment) {
-        Comment comment = commentRepository.findByTargetId(targetId)
+    public CommentDetails addSubComment(Integer targetId, boolean type ,SubCommentDto newSubComment) {
+        Comment comment = commentRepository.findByTargetIdAndType(targetId, type)
                 .orElseThrow(() -> new ApiException("Comment không tồn tại", HttpStatus.NOT_FOUND));
         List<CommentDetails> listSubCom = commentDetailsRepository.findByComment(comment);
         User user = userRepository.findByUsername(newSubComment.getUsername())
@@ -95,9 +92,9 @@ public class CommentService {
         return subComment;
     }
 
-    public boolean removeSubComment(Integer targetId, Integer subId) {
+    public boolean removeSubComment(Integer targetId, Integer subId, boolean type) {
 
-        Comment comment = commentRepository.findByTargetId(targetId)
+        Comment comment = commentRepository.findByTargetIdAndType(targetId, type)
                 .orElseThrow(() -> new ApiException("Comment không tồn tại", HttpStatus.NOT_FOUND));
         List<CommentDetails> listSubCom = commentDetailsRepository.findByComment(comment);
         CommentDetails subComment = listSubCom.stream().filter(i -> i.getId().equals(subId)).findFirst()
@@ -130,8 +127,8 @@ public class CommentService {
         return result;
     }
 
-    public CommentDetails updateSubComment(Integer targetId, Integer subId, SubCommentDto subCommentDto) {
-        Comment comment = commentRepository.findByTargetId(targetId)
+    public CommentDetails updateSubComment(Integer targetId, boolean type, Integer subId, SubCommentDto subCommentDto) {
+        Comment comment = commentRepository.findByTargetIdAndType(targetId, type)
                 .orElseThrow(() -> new ApiException("Comment không tồn tại", HttpStatus.NOT_FOUND));
         List<CommentDetails> listSubCom = commentDetailsRepository.findByComment(comment);
         CommentDetails subComment = listSubCom.stream().filter(i -> i.getId().equals(subId)).findFirst()
@@ -151,8 +148,8 @@ public class CommentService {
         return subComment;
     }
 
-    public List<CommentDetails> getComments(Integer targetId, Integer subId) {
-        Comment comment = commentRepository.findByTargetId(targetId)
+    public List<CommentDetails> getComments(Integer targetId, boolean type, Integer subId) {
+        Comment comment = commentRepository.findByTargetIdAndType(targetId, type)
                 .orElseThrow(() -> new ApiException("Comment không tồn tại", HttpStatus.NOT_FOUND));
         List<CommentDetails> listSubComment = commentDetailsRepository.findByComment(comment);
         int number = 0;

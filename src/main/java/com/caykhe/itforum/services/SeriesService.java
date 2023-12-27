@@ -151,6 +151,7 @@ public class SeriesService {
         }
 
         try {
+            commentService.deleteComment(series.getId(), true);
             seriesRepository.delete(series);
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi xóa series. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
