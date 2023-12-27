@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface SeriesPostRepository extends JpaRepository<SeriesPost, SeriesPostId> {
     List<SeriesPost> findAllBySeriesId(Integer id);
+    List<SeriesPost> findBySeriesId(Integer id);
 }
