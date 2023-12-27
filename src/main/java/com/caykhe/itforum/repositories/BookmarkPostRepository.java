@@ -13,4 +13,6 @@ public interface BookmarkPostRepository extends JpaRepository<BookmarkPost, Inte
     List<BookmarkPost> findByBookmarkAndTypeFalse(Bookmark bookmark);
 
     List<BookmarkPost> findByBookmarkAndTypeTrue(Bookmark bookmark);
+    Optional<BookmarkPost> findByTargetIdAndAndType(Integer target, Boolean type);
+    List<BookmarkPost> findByBookmark(Bookmark bookmark);
 }

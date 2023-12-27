@@ -18,9 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -226,4 +224,20 @@ public class SeriesService {
 
         return new ResultCount<>(seriesDtos, count);
     }
+    public List<Post> getListPost(Integer seriesId) {
+        Optional<Series> seriesOptional = seriesRepository.findById(seriesId);
+        List<Post> postList = new ArrayList<>();
+        if (seriesOptional.isPresent()) {
+            List<SeriesPost> seriesPostList = seriesPostRepository.findAllBySeriesId(seriesId);
+
+
+            for (SeriesPost seriesPost : seriesPostList) {
+                postList.add(seriesPost.getPost());
+            }
+            return postList;
+        }
+
+        return Collections.emptyList();
+    }
+
 }
