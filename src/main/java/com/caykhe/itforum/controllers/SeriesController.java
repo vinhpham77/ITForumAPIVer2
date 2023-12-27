@@ -61,10 +61,7 @@ public class SeriesController {
         if (postList.isEmpty()) {
             return new ResponseEntity<>("Không thấy bài viết nào trong series", HttpStatus.NOT_FOUND);
         } else {
-            for (Post post : postList) {
-                System.out.println(post.getTitle());
-            }
-            return new ResponseEntity<>(seriesService.getListPost(seriesId), HttpStatus.OK);
+            return new ResponseEntity<>(postList, HttpStatus.OK);
         }
     }
 
