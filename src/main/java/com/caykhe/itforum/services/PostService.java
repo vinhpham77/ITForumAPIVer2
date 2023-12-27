@@ -188,7 +188,7 @@ public class PostService {
         postPage = switch (fieldSearch) {
             case "title" -> postRepository.findByTitleContainingAndIsPrivateFalse(searchContent, pageable);
             case "content" -> postRepository.findByContentContainingAndIsPrivateFalse(searchContent, pageable);
-            case "displayName" ->
+            case "username" ->
                     postRepository.findByCreatedBy_DisplayNameContainingAndIsPrivateFalse(searchContent, pageable);
             case "tag" -> postRepository.findByTagsNameContainingAndIsPrivateFalse(searchContent, pageable);
             case "" ->
@@ -196,10 +196,14 @@ public class PostService {
             default ->
                     throw new ApiException("Lỗi! Không thể tìm kiếm theo trường " + fieldSearch, HttpStatus.BAD_REQUEST);
         };
-        List<Post> posts = postPage.toList();
-        long count = postPage.getTotalElements();
+        try {
+            List<Post> posts = postPage.toList();
+            long count = postPage.getTotalElements();
 
-        return new ResultCount<>(posts, count);
+            return new ResultCount<>(posts, count);
+        } catch (Exception e) {
+            throw new ApiException("Lỗi! không thể tim kiếm", HttpStatus.FORBIDDEN);
+        }
     }
 
     public List<Post> postsByTheSameAuthorsExcludingCurrent(String authorName, Integer currentPostId) {

@@ -67,7 +67,7 @@ public class SecurityConfig {
                                 "/posts/postsSameAuthor/{authorName}", "/posts/{id}", "/posts/number",
                                 "/posts/by/{username}", "/posts/search", "posts/totalPost/{username}").permitAll()
                         .requestMatchers("/tags").permitAll()
-                        .requestMatchers("/series/get", "/series/by/{username}", "/series/totalSeries/{username}", "/series/detail/{seriesId}", "/series/all", "/series/{id}").permitAll()
+                        .requestMatchers("/series/get", "/series/search", "/series/by/{username}", "/series/totalSeries/{username}", "/series/detail/{seriesId}", "/series/all", "/series/{id}").permitAll()
                         .requestMatchers("/votes/byPostId", "/votes", "/votes/{id}").permitAll()
                         .requestMatchers("/bookmarks/getPost{query}", "/bookmarks/getSeries{query}", "/bookmarks/{id}").permitAll()
                         .requestMatchers("/follows/{id}", "/follows/totalFollower/{followed}").permitAll()
