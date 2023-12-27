@@ -41,9 +41,9 @@ public class BookmarkService {
             List<Integer> targetIds = getTargetsByBookmark(bookmark, false);
 
             Page<Post> postPage;
-            Pageable pageable = (page == null || limit == null || page < 0 || limit <= 0)
+            Pageable pageable = (page == null || limit == null || page < 1 || limit <= 1)
                     ? Pageable.unpaged()
-                    : PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
+                    : PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
             postPage = tag.isBlank() ? postRepository.findByIdIn(targetIds, pageable)
                     : postRepository.findByIdInAndTagsName(targetIds, tag, pageable);
             List<Post> posts = postPage.toList();
@@ -63,9 +63,9 @@ public class BookmarkService {
             List<Integer> targetIds = getTargetsByBookmark(bookmark, true);
 
             Page<Series> seriesPage;
-            Pageable pageable = (page == null || limit == null || page < 0 || limit <= 0)
+            Pageable pageable = (page == null || limit == null || page < 1 || limit <= 1)
                     ? Pageable.unpaged()
-                    : PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
+                    : PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
             seriesPage = seriesRepository.findByIdIn(targetIds, pageable);
             List<SeriesDto> seriesDtos = seriesPage.getContent().stream()
                     .map(this::convertToDto)

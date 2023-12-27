@@ -177,9 +177,9 @@ public class SeriesService {
     @Transactional
     public ResultCount<SeriesDto> getSeries(Integer page, Integer limit) {
         Page<Series> seriesPage;
-        Pageable pageable = (page == null || limit == null || page < 0 || limit <= 0)
+        Pageable pageable = (page == null || limit == null || page < 1 || limit <= 1)
                 ? Pageable.unpaged()
-                : PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
+                : PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         seriesPage = seriesRepository.findByIsPrivateFalse(pageable);
 
@@ -195,7 +195,7 @@ public class SeriesService {
     @Transactional
     public ResultCount<SeriesDto> getSeriesFollow(Integer page, Integer size) {
         Page<Series> seriesPage;
-        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+        Pageable pageable = (page == null || size == null || page < 1 || size <= 1)
                 ? Pageable.unpaged()
                 : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
