@@ -51,6 +51,7 @@ public class FollowService {
         System.out.println(follow.toString());
         try {
             return followRepository.save(follow);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new ApiException("Có lỗi xảy ra khi theo dõi. Vui lòng thử lại!", HttpStatus.BAD_REQUEST);
