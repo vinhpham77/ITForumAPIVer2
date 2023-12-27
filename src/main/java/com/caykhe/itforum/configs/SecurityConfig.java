@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/votes/byPostId", "/votes", "/votes/{id}").permitAll()
                         .requestMatchers("/bookmarks/getPost{query}", "/bookmarks/getSeries{query}", "/bookmarks/{id}").permitAll()
                         .requestMatchers("/follows/{id}", "/follows/totalFollower/{followed}").permitAll()
-                        .requestMatchers("/comments/{contentId}/get{query}").permitAll()
+                        .requestMatchers("/comments/{targetId}/{type}/get{query}").permitAll()
                         .requestMatchers("/images/{imageName}").permitAll()
                         .anyRequest().authenticated())
 
