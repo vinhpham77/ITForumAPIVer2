@@ -46,34 +46,26 @@ public class SeriesController {
     @GetMapping("/get")
     public ResponseEntity<?> get(@RequestParam(required = false) Integer page,
                                  @RequestParam(required = false) Integer limit) {
-        return ResponseEntity.ok(seriesService.getSeries( page, limit));
+        return ResponseEntity.ok(seriesService.getSeries(page, limit));
     }
 
     @GetMapping("/get/follow")
-    public  ResponseEntity<?> getPostAggregationsFollow(@RequestParam(required = false, name = "page") Integer page,
-                                                        @RequestParam(required = false, name = "limit", defaultValue = "10") Integer limit) {
+    public ResponseEntity<?> getPostAggregationsFollow(@RequestParam(required = false, name = "page") Integer page,
+                                                       @RequestParam(required = false, name = "limit", defaultValue = "10") Integer limit) {
         return new ResponseEntity<>(seriesService.getSeriesFollow(page, limit), HttpStatus.OK);
     }
+
     @GetMapping("/detail/{seriesId}")
     public ResponseEntity<?> getPostsBySeriesId(@PathVariable Integer seriesId) {
         List<Post> postList = seriesService.getListPost(seriesId);
-
         if (postList.isEmpty()) {
             return new ResponseEntity<>("Không thấy bài viết nào trong series", HttpStatus.NOT_FOUND);
         } else {
-            for(Post post : postList){
-
-                System.out.println( post.getTitle());
+            for (Post post : postList) {
+                System.out.println(post.getTitle());
             }
-            try {
-                return new ResponseEntity<>(postList,HttpStatus.OK);
-            }
-            catch (Exception e){
-                System.out.println(e);
-            }
-
+            return new ResponseEntity<>(seriesService.getListPost(seriesId), HttpStatus.OK);
         }
-        return null;
     }
 
 }

@@ -215,14 +215,14 @@ public class SeriesService {
         if (seriesOptional.isPresent()) {
             List<SeriesPost> seriesPostList = seriesPostRepository.findAllBySeriesId(seriesId);
 
-
             for (SeriesPost seriesPost : seriesPostList) {
                 postList.add(seriesPost.getPost());
             }
             return postList;
+        }else{
+            throw new ApiException("Không tìm thấy series",HttpStatus.NOT_FOUND);
         }
 
-        return Collections.emptyList();
     }
 
 }
