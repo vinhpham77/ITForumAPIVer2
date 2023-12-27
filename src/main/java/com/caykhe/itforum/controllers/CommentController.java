@@ -1,7 +1,6 @@
 package com.caykhe.itforum.controllers;
 
 import com.caykhe.itforum.dtos.ApiException;
-import com.caykhe.itforum.dtos.SubCommentAggregate;
 import com.caykhe.itforum.dtos.SubCommentDto;
 import com.caykhe.itforum.models.CommentDetails;
 import com.caykhe.itforum.services.CommentService;

@@ -118,7 +118,6 @@ public class PostService {
         post.setTags(new HashSet<>(tags));
 
         try {
-            commentService.deleteComment(post.getId(), false);
             return postRepository.save(post);
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi cập nhật bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -138,6 +137,7 @@ public class PostService {
         }
 
         try {
+            commentService.deleteComment(post.getId(), false);
             postRepository.deleteById(id);
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi xóa bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
