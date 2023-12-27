@@ -2,30 +2,24 @@ package com.caykhe.itforum.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "follows")
+@IdClass(FollowId.class)
+@Table(name = "follows", schema = "ITForum")
 public class Follow {
-    @EmbeddedId
-    private FollowId id;
-
-    @MapsId("follower")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "follower", nullable = false, referencedColumnName = "username")
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "follower", referencedColumnName = "username")
     private User follower;
 
-    @MapsId("followed")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "followed", nullable = false, referencedColumnName = "username")
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "followed", referencedColumnName = "username")
     private User followed;
 
 }

@@ -24,9 +24,9 @@ public class TagService {
     }
 
     public ResultCount<Tag> get(Integer page, Integer size) {
-        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+        Pageable pageable = (page == null || size == null || page < 1 || size < 1)
                 ? Pageable.unpaged()
-                : PageRequest.of(page, size, Sort.by("name"));
+                : PageRequest.of(page -1, size, Sort.by("name"));
 
         List<Tag> tags = tagRepository.findAll(pageable).getContent();
         long count = tagRepository.count();

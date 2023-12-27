@@ -3,11 +3,13 @@ package com.caykhe.itforum.services;
 import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.dtos.PostDto;
 import com.caykhe.itforum.dtos.ResultCount;
+import com.caykhe.itforum.dtos.UserLatestPageable;
 import com.caykhe.itforum.models.Post;
 import com.caykhe.itforum.models.Tag;
 import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.repositories.PostRepository;
 import com.caykhe.itforum.repositories.UserRepository;
+import com.caykhe.itforum.utils.PaginationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,17 +52,14 @@ public class PostService {
     @Transactional
     public ResultCount<Post> getByUser(String createdBy, String tag, Integer page, Integer size) {
         Page<Post> postPage;
-        String requester = SecurityContextHolder.getContext().getAuthentication().getName();
-        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
-                ? Pageable.unpaged()
-                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        UserLatestPageable result = PaginationUtils.getUserLatestPageable(page, size);
 
-        if (requester.equals(createdBy)) {
-            postPage = (tag.isBlank()) ? postRepository.findByCreatedByUsername(createdBy, pageable)
-                    : postRepository.findByCreatedByUsernameAndTagsName(createdBy, tag, pageable);
+        if (result.requester().equals(createdBy)) {
+            postPage = (tag.isBlank()) ? postRepository.findByCreatedByUsername(createdBy, result.pageable())
+                    : postRepository.findByCreatedByUsernameAndTagsName(createdBy, tag, result.pageable());
         } else {
-            postPage = (tag.isBlank()) ? postRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable)
-                    : postRepository.findByCreatedByUsernameAndTagsNameAndIsPrivateFalse(createdBy, tag, pageable);
+            postPage = (tag.isBlank()) ? postRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, result.pageable())
+                    : postRepository.findByCreatedByUsernameAndTagsNameAndIsPrivateFalse(createdBy, tag, result.pageable());
         }
 
         List<Post> posts = postPage.toList();
@@ -93,22 +95,6 @@ public class PostService {
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    //    public List<Post> postsByTheSameAuthorsExcludingCurrent(String authorName, String currentPostId) {
-//        List<Post> allPostsByAuthor = postRepository.findByCreatedBy(authorName);
-//        List<Post> postsExcludingCurrent = new ArrayList<>();
-//        for (Post post : allPostsByAuthor) {
-//            if (!Objects.equals(post.getId(), currentPostId)) {
-//                postsExcludingCurrent.add(post);
-//            }
-//        }
-//        return postsExcludingCurrent;
-//    }
-    public List<Post> postsByTheSameAuthorsExcludingCurrent(String authorName, Integer currentPostId) {
-        Optional<User> author=userRepository.findByUsername(authorName);
-        List<Post> postList= postRepository.findByCreatedByAndIdNot(author.get(), currentPostId);
-        return postList;
     }
 
     @Transactional
@@ -163,7 +149,7 @@ public class PostService {
     @Transactional
     public ResultCount<Post> getPosts(Integer page, Integer size, String tag) {
         Page<Post> postPage;
-        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+        Pageable pageable = (page == null || size == null || page < 1 || size < 1)
                 ? Pageable.unpaged()
                 : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
@@ -179,7 +165,7 @@ public class PostService {
     @Transactional
     public ResultCount<Post> getPostsFollow(Integer page, Integer size, String tag) {
         Page<Post> postPage;
-        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
+        Pageable pageable = (page == null || size == null || page < 1 || size < 1)
                 ? Pageable.unpaged()
                 : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
@@ -197,7 +183,7 @@ public class PostService {
     public ResultCount<Post> search(String fieldSearch, String searchContent, String sort, String sortField, Integer page, Integer limit) {
         Page<Post> postPage;
         sortField = sortField.isEmpty() ? "updatedAt" : sortField;
-        Pageable pageable = (page == null || limit == null || page < 0 || limit <= 0)
+        Pageable pageable = (page == null || limit == null || page < 1 || limit < 1)
                 ? Pageable.unpaged()
                 : PageRequest.of(page - 1, limit, Sort.by("ASC".equalsIgnoreCase(sort) ? Sort.Direction.ASC : Sort.Direction.DESC, sortField));
 

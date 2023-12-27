@@ -3,11 +3,13 @@ package com.caykhe.itforum.services;
 import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.dtos.SeriesDto;
-import com.caykhe.itforum.dtos.SeriesUser;
+import com.caykhe.itforum.dtos.UserLatestPageable;
 import com.caykhe.itforum.models.*;
 import com.caykhe.itforum.repositories.SeriesPostRepository;
 import com.caykhe.itforum.repositories.SeriesRepository;
 import com.caykhe.itforum.repositories.UserRepository;
+import com.caykhe.itforum.utils.ConverterUtils;
+import com.caykhe.itforum.utils.PaginationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,21 +53,18 @@ public class SeriesService {
     @Transactional
     public ResultCount<SeriesDto> getByUser(String createdBy, Integer page, Integer size) {
         Page<Series> seriesPage;
-        String requester = SecurityContextHolder.getContext().getAuthentication().getName();
-        Pageable pageable = (page == null || size == null || page < 0 || size <= 0)
-                ? Pageable.unpaged()
-                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        UserLatestPageable result = PaginationUtils.getUserLatestPageable(page, size);
 
-        if (requester.equals(createdBy)) {
-            seriesPage = seriesRepository.findByCreatedByUsername(createdBy, pageable);
+        if (result.requester().equals(createdBy)) {
+            seriesPage = seriesRepository.findByCreatedByUsername(createdBy, result.pageable());
         } else {
-            seriesPage = seriesRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, pageable);
+            seriesPage = seriesRepository.findByCreatedByUsernameAndIsPrivateFalse(createdBy, result.pageable());
         }
 
         List<SeriesDto> seriesDtos = seriesPage.getContent().stream()
                 .map(this::convertToDto)
                 .toList();
-        
+
         long count = seriesPage.getTotalElements();
 
         return new ResultCount<>(seriesDtos, count);
@@ -170,23 +169,9 @@ public class SeriesService {
     }
 
     private SeriesDto convertToDto(Series series) {
-        List<Integer> postIds = seriesPostRepository.findAllBySeriesId(series.getId())
-                .stream().map(SeriesPost::getPost)
-                .map(Post::getId)
-                .toList();
-
-        return SeriesDto.builder()
-                .id(series.getId())
-                .title(series.getTitle())
-                .content(series.getContent())
-                .postIds(postIds)
-                .isPrivate(series.getIsPrivate())
-                .createdBy(series.getCreatedBy())
-                .updatedAt(series.getUpdatedAt())
-                .score(series.getScore())
-                .commentCount(series.getCommentCount())
-                .build();
+        return ConverterUtils.convertSeriesDto(series, seriesPostRepository);
     }
+
 
     @Transactional
     public ResultCount<SeriesDto> getSeries(Integer page, Integer limit) {
