@@ -1,6 +1,7 @@
 package com.caykhe.itforum.controllers;
 
 import com.caykhe.itforum.dtos.PostDto;
+import com.caykhe.itforum.models.Post;
 import com.caykhe.itforum.services.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,11 @@ public class PostController {
     public ResponseEntity<?> get(@PathVariable Integer id) {
         return new ResponseEntity<>(postService.get(id), HttpStatus.OK);
     }
-    
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody PostDto postDto) {
-        return new ResponseEntity<>(postService.create(postDto), HttpStatus.OK);
+        Post createdPost = postService.create(postDto);
+        return new ResponseEntity<>(createdPost, HttpStatus.OK);
     }
     
     @PutMapping("/{id}/update")

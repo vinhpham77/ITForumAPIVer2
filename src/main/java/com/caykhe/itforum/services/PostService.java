@@ -4,14 +4,17 @@ import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.dtos.PostDto;
 import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.dtos.UserLatestPageable;
+import com.caykhe.itforum.models.Notification;
 import com.caykhe.itforum.models.Post;
 import com.caykhe.itforum.models.Tag;
 import com.caykhe.itforum.models.User;
+import com.caykhe.itforum.repositories.NotificationRepository;
 import com.caykhe.itforum.repositories.PostRepository;
 import com.caykhe.itforum.repositories.UserRepository;
 import com.caykhe.itforum.utils.PaginationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,7 +68,8 @@ public class PostService {
 
         return new ResultCount<>(posts, count);
     }
-
+    @Autowired
+    private NotificationRepository notificationRepository;
     @Transactional
     public Post create(PostDto postDto) {
         var requester = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -88,6 +93,16 @@ public class PostService {
         try {
             post = postRepository.save(post);
             commentService.create(post.getId(), false);
+            // Tạo và lưu thông báo
+            Notification notification = new Notification();
+            notification.setUsername(user.getUsername()); // Sửa lại thành username
+            notification.setContent("@" + requester + " đã tạo một bài viết mới: " + post.getTitle());
+            notification.setCreatedAt(Instant.now());
+            notification.setRead(false);
+            notification.setType("post");
+            notification.setTargetId(post.getId());
+            notificationRepository.save(notification);
+
             return post;
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -188,7 +203,7 @@ public class PostService {
         postPage = switch (fieldSearch) {
             case "title" -> postRepository.findByTitleContainingAndIsPrivateFalse(searchContent, pageable);
             case "content" -> postRepository.findByContentContainingAndIsPrivateFalse(searchContent, pageable);
-            case "displayName" ->
+            case "username" ->
                     postRepository.findByCreatedBy_DisplayNameContainingAndIsPrivateFalse(searchContent, pageable);
             case "tag" -> postRepository.findByTagsNameContainingAndIsPrivateFalse(searchContent, pageable);
             case "" ->
@@ -196,10 +211,14 @@ public class PostService {
             default ->
                     throw new ApiException("Lỗi! Không thể tìm kiếm theo trường " + fieldSearch, HttpStatus.BAD_REQUEST);
         };
-        List<Post> posts = postPage.toList();
-        long count = postPage.getTotalElements();
+        try {
+            List<Post> posts = postPage.toList();
+            long count = postPage.getTotalElements();
 
-        return new ResultCount<>(posts, count);
+            return new ResultCount<>(posts, count);
+        } catch (Exception e) {
+            throw new ApiException("Lỗi! không thể tim kiếm", HttpStatus.FORBIDDEN);
+        }
     }
 
     public List<Post> postsByTheSameAuthorsExcludingCurrent(String authorName, Integer currentPostId) {
