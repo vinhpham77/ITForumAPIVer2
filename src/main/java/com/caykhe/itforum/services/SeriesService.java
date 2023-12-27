@@ -214,10 +214,10 @@ public class SeriesService {
         Optional<Series> seriesOptional = seriesRepository.findById(seriesId);
         List<Post> postList = new ArrayList<>();
         if (seriesOptional.isPresent()) {
-            List<SeriesPost> seriesPostList = seriesPostRepository.findBySeriesId(seriesId);
+            List<SeriesPost> seriesPostList = seriesPostRepository.findAllBySeriesId(seriesId);
             for (SeriesPost seriesPost : seriesPostList) {
-                postList.add(seriesPost.getPost());
-                System.out.println(seriesPost.getPost().getTitle());
+                Post post = seriesPost.getPost();
+                postList.add(post);
             }
             return postList;
         }else{

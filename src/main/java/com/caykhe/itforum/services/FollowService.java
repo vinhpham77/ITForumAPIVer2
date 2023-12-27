@@ -4,6 +4,7 @@ import com.caykhe.itforum.dtos.ApiException;
 import com.caykhe.itforum.models.Follow;
 import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.repositories.FollowRepository;
+import com.caykhe.itforum.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FollowService {
     final FollowRepository followRepository;
+    final UserRepository userRepository;
     final UserService userService;
     final EntityManager entityManager;
 
@@ -72,5 +74,17 @@ public class FollowService {
         List<Follow> follows = followRepository.findByFollower(followerUser)
                 .orElseThrow(() -> new ApiException("Tài khoản không tồn tại", HttpStatus.NOT_FOUND));
         return follows.stream().map(follow -> follow.getFollowed().getUsername()).collect(Collectors.toList());
+    }
+    public int countFollowerby(String username){
+        Optional<User> user=userRepository.findByUsername(username);
+        if (user.isPresent()){
+
+           List<Follow> follows= followRepository.findByFollowed(user.get());
+           return follows.size();
+        }
+        else{
+            throw new ApiException("User không tồn tại",HttpStatus.NOT_FOUND);
+        }
+
     }
 }

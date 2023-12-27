@@ -19,7 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "posts")
-public class Post implements Serializable {
+public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

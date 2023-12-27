@@ -14,16 +14,24 @@ import java.time.Instant;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "votes")
-public class Vote {
-    @EmbeddedId
-    private VoteId id;
+@IdClass(VoteId.class)
+@Table(name = "votes",schema = "ITForum")
 
-    @MapsId("username")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+public class Vote {
+
+    @Id
+    @Column(name = "target_id", nullable = false)
+    private Integer targetId;
+
+    @Id
+    @Column(name = "type", nullable = false)
+    private Boolean type = false;
+
+    @Id
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "username", nullable = false, referencedColumnName = "username")
-    private User username;
+    private User user;
 
     @NotNull
     @Column(name = "updated_at", nullable = false)

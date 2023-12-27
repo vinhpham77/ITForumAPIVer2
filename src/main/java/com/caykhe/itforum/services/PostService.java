@@ -204,8 +204,17 @@ public class PostService {
 
     public List<Post> postsByTheSameAuthorsExcludingCurrent(String authorName, Integer currentPostId) {
         Optional<User> author=userRepository.findByUsername(authorName);
-        List<Post> postList= postRepository.findByCreatedByAndIdNot(author.get(), currentPostId);
-        return postList;
+        return postRepository.findByCreatedByAndIdNot(author.get(), currentPostId);
     }
+    public int countPostCreateby(String username){
+        Optional<User> user=userRepository.findByUsername(username);
+        if (user.isPresent()){
+            return postRepository.countByCreatedBy(user.get());
+        }
+        else{
+            throw new ApiException("User không tồn tại",HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }

@@ -8,8 +8,7 @@ import java.util.Date;
 @Data
 @Builder
 public class VoteRequest {
-    private String postId;
+    private Integer targetId;
     private Boolean type;
     private String username;
-    private Date updatedAt;
 }
