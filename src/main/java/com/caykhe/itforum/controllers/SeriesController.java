@@ -75,4 +75,12 @@ public class SeriesController {
 
         return new ResponseEntity<>(seriesService.search(fieldName, searchContent, sort, sortField, page, limit), HttpStatus.OK);
     }
+    @GetMapping("/totalSeries/{username}")
+    public ResponseEntity<?> getTotalPost(@PathVariable String username){
+        return new ResponseEntity<>(seriesService.countSeriesCreateby(username),HttpStatus.OK);
+    }
+    @PutMapping("/updateScore")
+    public ResponseEntity<?> updateScore( @RequestParam Integer id,@RequestParam int score ){
+        return  new ResponseEntity<>(seriesService.upDateScore(id,score),HttpStatus.OK);
+    }
 }
