@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
-public class ImageService {
+public class
+ImageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageService.class);
     final ImageRepository imageRepository;
