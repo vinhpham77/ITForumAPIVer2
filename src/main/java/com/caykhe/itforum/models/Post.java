@@ -7,10 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
@@ -65,9 +63,6 @@ public class Post {
     @NotNull
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
-    @ManyToMany(mappedBy = "posts")
-    private Set<Series> series = new LinkedHashSet<>();
 
     @PrePersist
     public void prePersist() {
