@@ -20,7 +20,7 @@ public class VoteId implements Serializable {
     private static final long serialVersionUID = 9026443096854345784L;
 
     private Integer targetId;
-    private Boolean type = false;
+    private Boolean targetType = false;
     private User user;
 
     @Override
@@ -29,13 +29,13 @@ public class VoteId implements Serializable {
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         VoteId entity = (VoteId) o;
         return Objects.equals(this.targetId, entity.targetId) &&
-                Objects.equals(this.type, entity.type) &&
+                Objects.equals(this.targetType, entity.targetType) &&
                 Objects.equals(this.user, entity.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(targetId, type, user);
+        return Objects.hash(targetId, targetType, user);
     }
 
 }

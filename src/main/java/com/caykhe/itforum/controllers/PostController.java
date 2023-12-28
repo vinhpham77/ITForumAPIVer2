@@ -74,5 +74,9 @@ public class PostController {
     public ResponseEntity<?> getTotalPost(@PathVariable String username){
         return new ResponseEntity<>(postService.countPostCreateby(username),HttpStatus.OK);
     }
+    @PutMapping("/updateScore")
+    public ResponseEntity<?> updateScore( @RequestParam Integer id,@RequestParam int score ){
+        return  new ResponseEntity<>(postService.upDateScore(id,score),HttpStatus.OK);
+    }
 
 }

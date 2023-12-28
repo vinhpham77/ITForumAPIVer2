@@ -9,6 +9,7 @@ import com.caykhe.itforum.repositories.VoteRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,21 +29,21 @@ public class VotesService {
         return voteRepository.findAll();
     }
 
-//    public Optional<Vote> getVoteById(VoteRequest voteRequest) {
-//
-//        VoteId voteId= new VoteId();
-//        voteId.setTargetId(voteRequest.getTargetId());
-//        voteId.setUsername(voteRequest);
-//        voteId.setType(voteRequest.getType());
-//        return voteRepository.findById(voteId);
-//    }
+    public Vote voteById(Integer targetId,Boolean targetType) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return voteRepository.findByTargetIdAndTargetTypeAndUser(targetId,targetType,user)
+                .orElseThrow(() -> new ApiException("Vote không tìm thấy", HttpStatus.NOT_FOUND));
+    }
     @Transactional
     public Vote createVote(VoteRequest voteRequest) {
         var user = userService.getUserByUsername(voteRequest.getUsername());
         User managedUser = entityManager.merge(user);
         Vote vote = Vote.builder()
                 .targetId(voteRequest.getTargetId())
-                .type(voteRequest.getType())
+                .voteType(voteRequest.getVoteType())
+                .targetType(voteRequest.getTargetType())
                 .user(managedUser)
                 .updatedAt(Instant.now()).build();
         return voteRepository.save(vote);
@@ -50,26 +51,20 @@ public class VotesService {
 
 
 
-    public void unVote(VoteRequest voteRequest) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        VoteId voteId= new VoteId();
-        voteId.setTargetId(voteRequest.getTargetId());
-        voteId.setUser(user);
-        voteId.setType(voteRequest.getType());
-        voteRepository.deleteById(voteId);
+    public void unVote(Integer targetId, Boolean targetType) {
+       Vote vote= voteById(targetId,targetType);
+       voteRepository.delete(vote);
     }
+    public Vote hasVoted(Integer targetId,Boolean targetType) {
 
-    public Optional<Vote> hasVoted(VoteRequest voteRequest) {
+        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
+        if(username.equals("anonymousUser")){
+            throw new ApiException("Chưa đăng nhập", HttpStatus.NOT_FOUND);
+        }
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        VoteId voteId= new VoteId();
-        voteId.setTargetId(voteRequest.getTargetId());
-        voteId.setUser(user);
-        voteId.setType(voteRequest.getType());
-        return voteRepository.findById(voteId);
+
+        Optional<Vote> vote= voteRepository.findByTargetIdAndTargetTypeAndUser(targetId,targetType,user);
+        return vote.orElse(null);
+
     }
-
-
-
-
-
 }

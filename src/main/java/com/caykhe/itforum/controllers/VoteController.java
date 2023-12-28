@@ -29,14 +29,19 @@ public class VoteController {
         return new ResponseEntity<>(votesService.createVote(voteRequest), HttpStatus.OK) ;
     }
     @PostMapping("/unVote")
-    public ResponseEntity<?> unVote(@RequestBody VoteRequest voteRequest) {
-        votesService.unVote(voteRequest);
+    public ResponseEntity<?> unVote(@RequestParam Integer targetId,@RequestParam Boolean targetType) {
+        votesService.unVote(targetId,targetType);
         return new ResponseEntity<>("Xóa thành công",HttpStatus.OK) ;
     }
+    @GetMapping("/findBy")
+    public ResponseEntity<?> findBy(@RequestParam Integer targetId,@RequestParam Boolean targetType) {
 
-    @PostMapping("/checkVote")
-    public ResponseEntity<?> checkVote(@RequestBody VoteRequest voteRequest) {
-        votesService.hasVoted(voteRequest);
-        return new ResponseEntity<>("Xóa thành công",HttpStatus.OK) ;
+        return new ResponseEntity<>(votesService.voteById(targetId,targetType),HttpStatus.OK) ;
+    }
+
+    @GetMapping("/checkVote")
+    public ResponseEntity<?> checkVote(@RequestParam Integer targetId,@RequestParam Boolean targetType) {
+
+        return new ResponseEntity<>(votesService.hasVoted(targetId,targetType),HttpStatus.OK) ;
     }
 }
