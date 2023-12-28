@@ -2,8 +2,7 @@ package com.caykhe.itforum.controllers;
 
 import com.caykhe.itforum.dtos.BookmarkPostRequest;
 import com.caykhe.itforum.models.Bookmark;
-import com.caykhe.itforum.models.BookmarkPost;
-import com.caykhe.itforum.models.User;
+import com.caykhe.itforum.models.BookmarkDetail;
 import com.caykhe.itforum.services.BookmarkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,8 +42,8 @@ public class BookmarkController {
     public ResponseEntity<?> createBookmarkPost(@PathVariable Integer bookmarkId, @RequestBody BookmarkPostRequest request) {
         Optional<Bookmark> bookmark = bookmarkService.getBookmarkById(bookmarkId);
         if (bookmark.isPresent()) {
-            BookmarkPost bookmarkPost = bookmarkService.addBookmarkPost(bookmark.get(), request.getTargetId(), request.getType());
-            return new ResponseEntity<>(bookmarkPost, HttpStatus.CREATED);
+            BookmarkDetail bookmarkDetail = bookmarkService.addBookmarkPost(bookmark.get(), request.getTargetId(), request.getType());
+            return new ResponseEntity<>(bookmarkDetail, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>("Lỗi Không tìm thấy bookmark cần tạo", HttpStatus.BAD_REQUEST);
         }

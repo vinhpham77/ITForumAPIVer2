@@ -12,9 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -80,9 +78,9 @@ public class BookmarkService {
     }
 
     private List<Integer> getTargetsByBookmark(Bookmark bookmark, boolean isSeries) {
-        List<BookmarkPost> bookmarkPosts = isSeries ? bookmarkPostRepository.findByBookmarkAndTypeFalse(bookmark)
+        List<BookmarkDetail> bookmarkDetails = isSeries ? bookmarkPostRepository.findByBookmarkAndTypeFalse(bookmark)
                 : bookmarkPostRepository.findByBookmarkAndTypeTrue(bookmark);
-        return bookmarkPosts.stream().map(BookmarkPost::getTargetId).collect(Collectors.toList());
+        return bookmarkDetails.stream().map(BookmarkDetail::getTargetId).collect(Collectors.toList());
     }
 
     private SeriesDto convertToDto(Series series) {
@@ -96,23 +94,23 @@ public class BookmarkService {
         return bookmarkRepository.save(bookmark);
     }
 
-    public BookmarkPost addBookmarkPost(Bookmark bookmark, Integer targetId, Boolean type) {
-        BookmarkPostId id = new BookmarkPostId();
+    public BookmarkDetail addBookmarkPost(Bookmark bookmark, Integer targetId, Boolean type) {
+        BookmarkDetailId id = new BookmarkDetailId();
         id.setBookmarkId(bookmark.getId());
         id.setTargetId(targetId);
         id.setType(type);
 
-        BookmarkPost bookmarkPost = new BookmarkPost();
-        bookmarkPost.setId(id);
-        bookmarkPost.setBookmark(bookmark);
-        bookmarkPost.setTargetId(targetId);
-        bookmarkPost.setType(type);
+        BookmarkDetail bookmarkDetail = new BookmarkDetail();
+        bookmarkDetail.setId(id);
+        bookmarkDetail.setBookmark(bookmark);
+        bookmarkDetail.setTargetId(targetId);
+        bookmarkDetail.setType(type);
 
-        return bookmarkPostRepository.save(bookmarkPost);
+        return bookmarkPostRepository.save(bookmarkDetail);
     }
 
 
-    public BookmarkPost bookmark(String username, BookmarkPostRequest request) {
+    public BookmarkDetail bookmark(String username, BookmarkPostRequest request) {
         Optional<User> userOptional = userRepository.findByUsername(username);
 
         if (userOptional.isPresent()) {
@@ -139,10 +137,10 @@ public class BookmarkService {
         Integer targetId = bookmarkPostRequest.getTargetId();
         Boolean type = bookmarkPostRequest.getType();
 
-        BookmarkPost bookmarkPost = bookmarkPostRepository.findByTargetIdAndAndType(targetId, type)
+        BookmarkDetail bookmarkDetail = bookmarkPostRepository.findByTargetIdAndAndType(targetId, type)
                 .orElseThrow(() -> new ApiException("BookmarkPost not found for targetId: " + targetId + " and type: " + type, HttpStatus.NOT_FOUND));
 
-        bookmarkPostRepository.delete(bookmarkPost);
+        bookmarkPostRepository.delete(bookmarkDetail);
 
         if (bookmarkPostRepository.findByBookmark(bookmark).isEmpty()) {
             bookmarkRepository.delete(bookmark);
@@ -159,7 +157,7 @@ public class BookmarkService {
                 Integer targetId = bookmarkPostRequest.getTargetId();
                 Boolean type = bookmarkPostRequest.getType();
 
-                Optional<BookmarkPost> bookmarkPost = bookmarkPostRepository.findByTargetIdAndAndType(targetId, type);
+                Optional<BookmarkDetail> bookmarkPost = bookmarkPostRepository.findByTargetIdAndAndType(targetId, type);
                 return bookmarkPost.isPresent();
             }
         } else {

@@ -9,10 +9,10 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "bookmark_posts")
-public class BookmarkPost {
+@Table(name = "bookmark_details")
+public class BookmarkDetail {
     @EmbeddedId
-    private BookmarkPostId id;
+    private BookmarkDetailId id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
