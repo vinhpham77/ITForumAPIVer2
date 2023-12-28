@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "bookmark_posts")
+@Table(name = "bookmark_details")
 public class BookmarkPost {
     @EmbeddedId
     private BookmarkPostId id;

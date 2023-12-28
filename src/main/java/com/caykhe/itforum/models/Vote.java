@@ -24,8 +24,8 @@ public class Vote {
     private Integer targetId;
 
     @Id
-    @Column(name = "type", nullable = false)
-    private Boolean type = false;
+    @Column(name = "target_type", nullable = false)
+    private Boolean targetType = false;
 
     @Id
     @ManyToOne
@@ -36,5 +36,9 @@ public class Vote {
     @NotNull
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @NotNull
+    @Column(name = "vote_type", nullable = false)
+    private Boolean voteType;
 
 }

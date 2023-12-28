@@ -9,6 +9,7 @@ import java.util.Date;
 @Builder
 public class VoteRequest {
     private Integer targetId;
-    private Boolean type;
+    private Boolean targetType;
+    private Boolean voteType;
     private String username;
 }

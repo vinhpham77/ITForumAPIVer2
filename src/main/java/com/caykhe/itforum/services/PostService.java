@@ -234,6 +234,19 @@ public class PostService {
             throw new ApiException("User không tồn tại",HttpStatus.NOT_FOUND);
         }
     }
+    public Post upDateScore(Integer id, int score) {
+        {
+            Optional<Post> postOptional = postRepository.findById(id);
+            if (postOptional.isPresent()) {
+                Post post = postOptional.get();
+                post.setScore(score);
+                return postRepository.save(post);
+            } else {
+                throw new ApiException("Không tìm thấy post cần vote", HttpStatus.NOT_FOUND);
+            }
+        }
+    }
+
 
 
 }
