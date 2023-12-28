@@ -4,6 +4,7 @@ import com.caykhe.itforum.models.Notification;
 import com.caykhe.itforum.models.User;
 import com.caykhe.itforum.repositories.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class NotificationService {
     }
 
 
-    public List<Notification> getAllNotifications(String username) {
+    public List<Notification> getAllNotifications() {
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return notificationRepository.findByUsernameOrderByCreatedAtDesc(username);
     }
 }

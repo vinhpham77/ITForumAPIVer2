@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/notification")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -29,10 +29,10 @@ public class NotificationController {
             return ResponseEntity.badRequest().body("Invalid notification data");
         }
     }
-    @GetMapping("/{username}")
-    public ResponseEntity<List<Notification>> getAllNotifications(@PathVariable String username, Integer id) {
+    @GetMapping("/get")
+    public ResponseEntity<List<Notification>> getAllNotifications() {
         // Lấy thông tin User từ username
-        List<Notification> allNotifications = notificationService.getAllNotifications(username);
+        List<Notification> allNotifications = notificationService.getAllNotifications();
         return ResponseEntity.ok(allNotifications);
     }
 }
