@@ -8,6 +8,6 @@ import java.util.List;
 public class CommentAggregate {
     private String id;
     private String contentId;
-    private Type type;
+    private TargetType type;
     private List<SubCommentAggregate> comments;
 }

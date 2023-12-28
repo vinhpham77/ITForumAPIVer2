@@ -1,18 +1,18 @@
 package com.caykhe.itforum.services;
 
 import com.caykhe.itforum.dtos.ApiException;
-import com.caykhe.itforum.dtos.BookmarkPostRequest;
+import com.caykhe.itforum.dtos.BookmarkDetailRequest;
 import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.dtos.SeriesDto;
 import com.caykhe.itforum.models.*;
 import com.caykhe.itforum.repositories.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,14 +27,14 @@ import static com.caykhe.itforum.utils.ConverterUtils.convertSeriesDto;
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
-    private final BookmarkPostRepository bookmarkPostRepository;
+    private final BookmarkDetailRepository bookmarkDetailRepository;
     private final PostRepository postRepository;
     private final SeriesRepository seriesRepository;
     private final SeriesPostRepository seriesPostRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     public ResultCount<Post> getPostByUserName(String createdBy, Integer page, Integer limit, String tag) {
-
         Bookmark bookmark = bookmarkRepository.findByUsernameUsername(createdBy)
                 .orElseThrow(() -> new ApiException("Người dùng @" + createdBy + " không tồn tại", HttpStatus.NOT_FOUND));
         try {
@@ -56,7 +56,6 @@ public class BookmarkService {
     }
 
     public ResultCount<SeriesDto> getSeriesByUserName(String createdBy, Integer page, Integer limit) {
-
         Bookmark bookmark = bookmarkRepository.findByUsernameUsername(createdBy)
                 .orElseThrow(() -> new ApiException("Người dùng @" + createdBy + " không tồn tại", HttpStatus.NOT_FOUND));
         try {
@@ -80,8 +79,8 @@ public class BookmarkService {
     }
 
     private List<Integer> getTargetsByBookmark(Bookmark bookmark, boolean isSeries) {
-        List<BookmarkDetail> bookmarkDetails = isSeries ? bookmarkPostRepository.findByBookmarkAndTypeFalse(bookmark)
-                : bookmarkPostRepository.findByBookmarkAndTypeTrue(bookmark);
+        List<BookmarkDetail> bookmarkDetails = isSeries ? bookmarkDetailRepository.findByBookmarkAndTypeFalse(bookmark)
+                : bookmarkDetailRepository.findByBookmarkAndTypeTrue(bookmark);
         return bookmarkDetails.stream().map(BookmarkDetail::getTargetId).collect(Collectors.toList());
     }
 
@@ -96,17 +95,13 @@ public class BookmarkService {
         return bookmarkRepository.save(bookmark);
     }
 
-    public BookmarkDetail addBookmarkPost(Bookmark bookmark, Integer targetId, Boolean type) {
+    public BookmarkDetail addBookmarkDetail(Bookmark bookmark, Integer targetId, Boolean type) {
         BookmarkDetailId id = new BookmarkDetailId();
-    @Autowired
-    private NotificationRepository notificationRepository;
-    public BookmarkPost addBookmarkPost(Bookmark bookmark, Integer targetId, Boolean type) {
-        BookmarkPostId id = new BookmarkPostId();
         id.setBookmarkId(bookmark.getId());
         id.setTargetId(targetId);
         id.setType(type);
 
-        BookmarkPost bookmarkPost = new BookmarkPost();
+        BookmarkDetail bookmarkPost = new BookmarkDetail();
         bookmarkPost.setId(id);
         bookmarkPost.setBookmark(bookmark);
         bookmarkPost.setTargetId(targetId);
@@ -121,19 +116,18 @@ public class BookmarkService {
         notification.setType("bookmark");
         notification.setTargetId(targetId);
         notificationRepository.save(notification);
-        return bookmarkPostRepository.save(bookmarkPost);
+        return bookmarkDetailRepository.save(bookmarkPost);
 
     }
-
-
-    public BookmarkDetail bookmark(String username, BookmarkPostRequest request) {
+    
+    public BookmarkDetail bookmark(String username, BookmarkDetailRequest request) {
         Optional<User> userOptional = userRepository.findByUsername(username);
 
         if (userOptional.isPresent()) {
             Optional<Bookmark> bookmarkOptional = bookmarkRepository.findByUsername(userOptional.get());
             Bookmark bookmark;
             bookmark = bookmarkOptional.orElseGet(() -> createBookmark(username));
-            return addBookmarkPost(bookmark, request.getTargetId(), request.getType());
+            return addBookmarkDetail(bookmark, request.getTargetId(), request.getType());
         } else {
             throw new ApiException("User not found with username: " + username, HttpStatus.NOT_FOUND);
         }
@@ -143,7 +137,7 @@ public class BookmarkService {
         return bookmarkRepository.findById(id);
     }
 
-    public void unBookmark(String username, BookmarkPostRequest bookmarkPostRequest) {
+    public void unBookmark(String username, BookmarkDetailRequest bookmarkPostRequest) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ApiException("User not found with username: " + username, HttpStatus.NOT_FOUND));
 
@@ -153,17 +147,17 @@ public class BookmarkService {
         Integer targetId = bookmarkPostRequest.getTargetId();
         Boolean type = bookmarkPostRequest.getType();
 
-        BookmarkDetail bookmarkDetail = bookmarkPostRepository.findByTargetIdAndAndType(targetId, type)
-                .orElseThrow(() -> new ApiException("BookmarkPost not found for targetId: " + targetId + " and type: " + type, HttpStatus.NOT_FOUND));
+        BookmarkDetail bookmarkDetail = bookmarkDetailRepository.findByTargetIdAndAndType(targetId, type)
+                .orElseThrow(() -> new ApiException("BookmarkDetail not found for targetId: " + targetId + " and type: " + type, HttpStatus.NOT_FOUND));
 
-        bookmarkPostRepository.delete(bookmarkDetail);
+        bookmarkDetailRepository.delete(bookmarkDetail);
 
-        if (bookmarkPostRepository.findByBookmark(bookmark).isEmpty()) {
+        if (bookmarkDetailRepository.findByBookmark(bookmark).isEmpty()) {
             bookmarkRepository.delete(bookmark);
         }
     }
 
-    public Boolean isBookmark(String username, BookmarkPostRequest bookmarkPostRequest) {
+    public Boolean isBookmark(String username, BookmarkDetailRequest bookmarkPostRequest) {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             Optional<Bookmark> bookmark = bookmarkRepository.findByUsername(user.get());
@@ -173,7 +167,7 @@ public class BookmarkService {
                 Integer targetId = bookmarkPostRequest.getTargetId();
                 Boolean type = bookmarkPostRequest.getType();
 
-                Optional<BookmarkDetail> bookmarkPost = bookmarkPostRepository.findByTargetIdAndAndType(targetId, type);
+                Optional<BookmarkDetail> bookmarkPost = bookmarkDetailRepository.findByTargetIdAndAndType(targetId, type);
                 return bookmarkPost.isPresent();
             }
         } else {

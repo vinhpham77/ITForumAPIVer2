@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface BookmarkPostRepository extends JpaRepository<BookmarkDetail, Integer> {
+public interface BookmarkDetailRepository extends JpaRepository<BookmarkDetail, Integer> {
 
     List<BookmarkDetail> findByBookmarkAndTypeFalse(Bookmark bookmark);
 

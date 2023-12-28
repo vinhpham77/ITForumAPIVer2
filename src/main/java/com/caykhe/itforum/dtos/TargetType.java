@@ -1,6 +1,6 @@
 package com.caykhe.itforum.dtos;
 
-public enum Type {
+public enum TargetType {
     post,
     series,
 }
