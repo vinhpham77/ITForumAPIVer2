@@ -45,8 +45,8 @@ public class SeriesController {
 
     @GetMapping("/get")
     public ResponseEntity<?> get(@RequestParam(required = false) Integer page,
-                                 @RequestParam(required = false) Integer limit) {
-        return ResponseEntity.ok(seriesService.getSeries(page, limit));
+                                 @RequestParam(required = false) Integer size) {
+        return ResponseEntity.ok(seriesService.getSeries(page, size));
     }
 
     @GetMapping("/get/follow")
@@ -74,5 +74,13 @@ public class SeriesController {
                                        @RequestParam(required = false, name = "limit", defaultValue = "10") int limit) {
 
         return new ResponseEntity<>(seriesService.search(fieldName, searchContent, sort, sortField, page, limit), HttpStatus.OK);
+    }
+    @GetMapping("/totalSeries/{username}")
+    public ResponseEntity<?> getTotalPost(@PathVariable String username){
+        return new ResponseEntity<>(seriesService.countSeriesCreateby(username),HttpStatus.OK);
+    }
+    @PutMapping("/updateScore")
+    public ResponseEntity<?> updateScore( @RequestParam Integer id,@RequestParam int score ){
+        return  new ResponseEntity<>(seriesService.upDateScore(id,score),HttpStatus.OK);
     }
 }

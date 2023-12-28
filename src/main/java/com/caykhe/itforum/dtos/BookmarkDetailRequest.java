@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class BookmarkPostRequest {
+public class BookmarkDetailRequest {
     private Integer targetId;
     private Boolean type;
 }

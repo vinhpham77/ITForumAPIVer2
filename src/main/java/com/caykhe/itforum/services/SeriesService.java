@@ -72,8 +72,10 @@ public class SeriesService {
 
         return new ResultCount<>(seriesDtos, count);
     }
+
     @Autowired
     private NotificationRepository notificationRepository;
+
     @Transactional
     public Series create(SeriesDto seriesDto) {
         var requester = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -188,11 +190,11 @@ public class SeriesService {
 
 
     @Transactional
-    public ResultCount<SeriesDto> getSeries(Integer page, Integer limit) {
+    public ResultCount<SeriesDto> getSeries(Integer page, Integer size) {
         Page<Series> seriesPage;
-        Pageable pageable = (page == null || limit == null || page < 1 || limit <= 1)
+        Pageable pageable = (page == null || size == null || page < 1 || size <= 1)
                 ? Pageable.unpaged()
-                : PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updatedAt"));
+                : PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
         seriesPage = seriesRepository.findByIsPrivateFalse(pageable);
 
@@ -223,18 +225,29 @@ public class SeriesService {
 
         return new ResultCount<>(seriesDtos, count);
     }
+
     public List<Post> getListPost(Integer seriesId) {
         Optional<Series> seriesOptional = seriesRepository.findById(seriesId);
         List<Post> postList = new ArrayList<>();
         if (seriesOptional.isPresent()) {
             List<SeriesPost> seriesPostList = seriesPostRepository.findAllBySeriesId(seriesId);
             for (SeriesPost seriesPost : seriesPostList) {
-                Post post = seriesPost.getPost();
-                postList.add(post);
+
+                postList.add(Post.builder()
+                        .isPrivate(seriesPost.getPost().getIsPrivate())
+                        .tags(seriesPost.getPost().getTags())
+                        .score(seriesPost.getPost().getScore())
+                        .updatedAt(seriesPost.getPost().getUpdatedAt())
+                        .id(seriesPost.getPost().getId())
+                        .commentCount(seriesPost.getPost().getCommentCount())
+                        .createdBy(seriesPost.getPost().getCreatedBy())
+                        .title(seriesPost.getPost().getTitle())
+                        .content(seriesPost.getPost().getContent())
+                        .build());
             }
             return postList;
-        }else{
-            throw new ApiException("Không tìm thấy series",HttpStatus.NOT_FOUND);
+        } else {
+            throw new ApiException("Không tìm thấy series", HttpStatus.NOT_FOUND);
         }
 
     }
@@ -268,6 +281,27 @@ public class SeriesService {
             return new ResultCount<>(seriesDtos, count);
         } catch (Exception e) {
             throw new ApiException("Lỗi! không thể tim kiếm", HttpStatus.FORBIDDEN);
+        }
+    }
+    public Series upDateScore(Integer id, int score) {
+        {
+            Optional<Series> seriesOptional = seriesRepository.findById(id);
+            if (seriesOptional.isPresent()) {
+                Series series = seriesOptional.get();
+                series.setScore(score);
+                return seriesRepository.save(series);
+            } else {
+                throw new ApiException("Không tìm thấy post cần vote", HttpStatus.NOT_FOUND);
+            }
+        }
+    }
+    public int countSeriesCreateby(String username){
+        Optional<User> user=userRepository.findByUsername(username);
+        if (user.isPresent()){
+            return seriesRepository.countByCreatedBy(user.get());
+        }
+        else{
+            throw new ApiException("User không tồn tại",HttpStatus.NOT_FOUND);
         }
     }
 }
