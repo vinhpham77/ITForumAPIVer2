@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 
@@ -21,8 +23,10 @@ public class Notification {
     private Integer id;
 
     @NotNull
-    @Column(name = "username", nullable = false)
-    private String username;  // Sửa lại thành username
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "username", nullable = false, referencedColumnName = "username")
+    private User username; // Sửa lại thành username
 
     @NotNull
     @Lob

@@ -95,7 +95,7 @@ public class PostService {
             commentService.create(post.getId(), false);
             // Tạo và lưu thông báo
             Notification notification = new Notification();
-            notification.setUsername(user.getUsername()); // Sửa lại thành username
+            notification.setUsername(user); // Sửa lại thành username
             notification.setContent("@" + requester + " đã tạo một bài viết mới: " + post.getTitle());
             notification.setCreatedAt(Instant.now());
             notification.setRead(false);

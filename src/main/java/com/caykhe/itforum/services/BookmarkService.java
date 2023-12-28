@@ -114,7 +114,7 @@ public class BookmarkService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // Tạo và lưu thông báo
         Notification notification = new Notification();
-        notification.setUsername(user.getUsername()); // Sửa lại thành username
+        notification.setUsername(user); // Sửa lại thành username
         notification.setContent("@" + user.getUsername() + " đã bookmark bài viết cua bạn: " + bookmarkPost.getBookmark());
         notification.setCreatedAt(Instant.now());
         notification.setRead(false);

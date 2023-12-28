@@ -20,7 +20,7 @@ public class NotificationService {
 
 
     public List<Notification> getAllNotifications() {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return notificationRepository.findByUsernameOrderByCreatedAtDesc(username);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return notificationRepository.findByUsernameOrderByCreatedAtDesc(user);
     }
 }
