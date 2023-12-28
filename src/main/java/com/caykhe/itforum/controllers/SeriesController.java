@@ -45,8 +45,8 @@ public class SeriesController {
 
     @GetMapping("/get")
     public ResponseEntity<?> get(@RequestParam(required = false) Integer page,
-                                 @RequestParam(required = false) Integer limit) {
-        return ResponseEntity.ok(seriesService.getSeries(page, limit));
+                                 @RequestParam(required = false) Integer size) {
+        return ResponseEntity.ok(seriesService.getSeries(page, size));
     }
 
     @GetMapping("/get/follow")
