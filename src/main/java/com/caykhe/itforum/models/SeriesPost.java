@@ -26,7 +26,7 @@ public class SeriesPost {
     @MapsId("postId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "id")
     private Post post;
 
 }

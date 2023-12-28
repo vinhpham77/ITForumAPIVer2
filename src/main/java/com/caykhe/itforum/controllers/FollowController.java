@@ -28,4 +28,8 @@ public class FollowController {
         followService.unfollow(followed);
         return new ResponseEntity<>("Bỏ theo dõi thành công", HttpStatus.OK);
     }
+    @GetMapping("/totalFollower/{followed}")
+    public ResponseEntity<?> getTotalPost(@PathVariable String followed){
+        return new ResponseEntity<>(followService.countFollowerby(followed),HttpStatus.OK);
+    }
 }

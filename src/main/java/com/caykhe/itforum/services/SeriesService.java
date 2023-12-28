@@ -228,9 +228,9 @@ public class SeriesService {
         List<Post> postList = new ArrayList<>();
         if (seriesOptional.isPresent()) {
             List<SeriesPost> seriesPostList = seriesPostRepository.findAllBySeriesId(seriesId);
-
             for (SeriesPost seriesPost : seriesPostList) {
-                postList.add(seriesPost.getPost());
+                Post post = seriesPost.getPost();
+                postList.add(post);
             }
             return postList;
         }else{

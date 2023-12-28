@@ -70,4 +70,9 @@ public class PostController {
     public ResponseEntity<?> getPostsSameAuthor(@PathVariable String authorName ,@RequestParam Integer postId){
         return  new ResponseEntity<>(postService.postsByTheSameAuthorsExcludingCurrent(authorName,postId),HttpStatus.OK);
     }
+    @GetMapping("/totalPost/{username}")
+    public ResponseEntity<?> getTotalPost(@PathVariable String username){
+        return new ResponseEntity<>(postService.countPostCreateby(username),HttpStatus.OK);
+    }
+
 }
