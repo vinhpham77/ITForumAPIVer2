@@ -59,7 +59,7 @@ public class VotesService {
 
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
         if(username.equals("anonymousUser")){
-            throw new ApiException("Chưa đăng nhập", HttpStatus.NOT_FOUND);
+            return null;
         }
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
