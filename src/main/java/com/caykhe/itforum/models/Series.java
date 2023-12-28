@@ -9,6 +9,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,7 +33,7 @@ public class Series {
 
     @NotNull
     @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @NotNull
@@ -55,6 +57,12 @@ public class Series {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "created_by", nullable = false, referencedColumnName = "username")
     private User createdBy;
+
+    @ManyToMany
+    @JoinTable(name = "series_posts",
+            joinColumns = @JoinColumn(name = "series_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id"))
+    private Set<Post> posts = new LinkedHashSet<>();
 
     @PrePersist
     public void prePersist() {
