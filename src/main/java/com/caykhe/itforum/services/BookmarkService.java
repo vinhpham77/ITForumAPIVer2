@@ -7,15 +7,18 @@ import com.caykhe.itforum.dtos.SeriesDto;
 import com.caykhe.itforum.models.*;
 import com.caykhe.itforum.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -95,7 +98,8 @@ public class BookmarkService {
         user.ifPresent(bookmark::setUsername);
         return bookmarkRepository.save(bookmark);
     }
-
+    @Autowired
+    private NotificationRepository notificationRepository;
     public BookmarkPost addBookmarkPost(Bookmark bookmark, Integer targetId, Boolean type) {
         BookmarkPostId id = new BookmarkPostId();
         id.setBookmarkId(bookmark.getId());
@@ -107,8 +111,18 @@ public class BookmarkService {
         bookmarkPost.setBookmark(bookmark);
         bookmarkPost.setTargetId(targetId);
         bookmarkPost.setType(type);
-
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // Tạo và lưu thông báo
+        Notification notification = new Notification();
+        notification.setUsername(user.getUsername()); // Sửa lại thành username
+        notification.setContent("@" + user.getUsername() + " đã bookmark bài viết cua bạn: " + bookmarkPost.getBookmark());
+        notification.setCreatedAt(Instant.now());
+        notification.setRead(false);
+        notification.setType("bookmark");
+        notification.setTargetId(targetId);
+        notificationRepository.save(notification);
         return bookmarkPostRepository.save(bookmarkPost);
+
     }
 
 
