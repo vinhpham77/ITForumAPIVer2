@@ -5,6 +5,7 @@ import com.caykhe.itforum.dtos.ResultCount;
 import com.caykhe.itforum.dtos.SeriesDto;
 import com.caykhe.itforum.dtos.UserLatestPageable;
 import com.caykhe.itforum.models.*;
+import com.caykhe.itforum.repositories.NotificationRepository;
 import com.caykhe.itforum.repositories.SeriesPostRepository;
 import com.caykhe.itforum.repositories.SeriesRepository;
 import com.caykhe.itforum.repositories.UserRepository;
@@ -12,6 +13,7 @@ import com.caykhe.itforum.utils.ConverterUtils;
 import com.caykhe.itforum.utils.PaginationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -69,7 +72,8 @@ public class SeriesService {
 
         return new ResultCount<>(seriesDtos, count);
     }
-
+    @Autowired
+    private NotificationRepository notificationRepository;
     @Transactional
     public Series create(SeriesDto seriesDto) {
         var requester = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -88,6 +92,15 @@ public class SeriesService {
         try {
             series = seriesRepository.save(series);
             commentService.create(series.getId(), true);
+            // Tạo và lưu thông báo
+            Notification notification = new Notification();
+            notification.setUsername(user.getUsername()); // Sửa lại thành username
+            notification.setContent("@" + requester + " đã tạo series mới: " + series.getTitle());
+            notification.setCreatedAt(Instant.now());
+            notification.setRead(false);
+            notification.setType("post");
+            notification.setTargetId(series.getId());
+            notificationRepository.save(notification);
             return series;
         } catch (Exception e) {
             throw new ApiException("Có lỗi xảy ra khi tạo series. Vui lòng thử lại!", HttpStatus.INTERNAL_SERVER_ERROR);
