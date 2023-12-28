@@ -59,7 +59,7 @@ public class SeriesController {
     public ResponseEntity<?> getPostsBySeriesId(@PathVariable Integer seriesId) {
         List<Post> postList = seriesService.getListPost(seriesId);
         if (postList.isEmpty()) {
-            return new ResponseEntity<>("Không thấy bài viết nào trong series", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Không thấy bài viết nào trong series", HttpStatus.OK);
         } else {
             return new ResponseEntity<>(postList, HttpStatus.OK);
         }
