@@ -26,7 +26,7 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "username", nullable = false, referencedColumnName = "username")
-    private User username; // Sửa lại thành username
+    private User username;
 
     @NotNull
     @Lob
