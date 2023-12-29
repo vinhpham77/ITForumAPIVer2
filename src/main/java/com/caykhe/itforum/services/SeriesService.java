@@ -232,7 +232,6 @@ public class SeriesService {
         if (seriesOptional.isPresent()) {
             List<SeriesPost> seriesPostList = seriesPostRepository.findAllBySeriesId(seriesId);
             for (SeriesPost seriesPost : seriesPostList) {
-
                 postList.add(Post.builder()
                         .isPrivate(seriesPost.getPost().getIsPrivate())
                         .tags(seriesPost.getPost().getTags())

@@ -36,7 +36,7 @@ public class BookmarkService {
 
     public ResultCount<Post> getPostByUserName(String createdBy, Integer page, Integer limit, String tag) {
         Bookmark bookmark = bookmarkRepository.findByUsernameUsername(createdBy)
-                .orElseThrow(() -> new ApiException("Người dùng @" + createdBy + " không tồn tại", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException("Bạn chưa bookmark", HttpStatus.NOT_FOUND));
         try {
             List<Integer> targetIds = getTargetsByBookmark(bookmark, false);
 
